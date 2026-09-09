@@ -18,9 +18,11 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 
 This is the optional Wednesday session: three 45-minute teaching blocks. Use the rendered HTML handout beside RStudio. Write and run your work in an ordinary R script called `day2.R`. You do not need to knit an R Markdown document yourself.
 
-The six exercises are labelled **D2-E1** to **D2-E6** so they cannot be confused with Monday's exercises. Start with the core tasks. Use the hints, ask for help, and open solutions after attempting the task. Extensions and the practice bank are optional. You are not expected to finish every task.
+The six exercises are labelled **E1** to **E6** so they cannot be confused with Monday's exercises. Start with the core tasks. Use the hints, ask for help, and open solutions after attempting the task. Extensions and the practice bank are optional. You are not expected to finish every task.
 
 Our aim is to select patients, create a variable, describe groups, and make an understandable figure. All rehabilitation data below are fictional. A change in these data is a description, not evidence that a programme caused an improvement.
+
+[Course github](https://github.com/jsepin/introduction-to-r-rstudio)
 
 ## Before class
 
@@ -38,7 +40,7 @@ library(tidyverse)
 
 | Block | Activity |
 |:--|:--|
-| 1 | Welcome, setup, and D2-E1: Getting started again |
+| 1 | Welcome, setup, and E1: Getting started again |
 | 1 | Select columns, filter rows, and connect steps |
 | 1 | E2: Prepare a patient list |
 | 1 | Sort a table |
@@ -48,7 +50,7 @@ library(tidyverse)
 | 2 | E4: Describe the two programmes |
 | 3 | Build a scatter plot |
 | 3 | E5: Create and label a figure |
-| 3 | Histograms and D2-E6: A small complete analysis |
+| 3 | Histograms and E6: A small complete analysis |
 | 3 | Save your work and close |
 
 # Block 1: Select and organise data

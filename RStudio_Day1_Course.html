@@ -2787,6 +2787,8 @@ code.</li>
 exercise. Extra tasks are a practice bank, not additional compulsory
 material. All small clinical datasets below are fictional. Thresholds
 are exercise definitions, not clinical recommendations.</p>
+<p><a href="https://github.com/jsepin/introduction-to-r-rstudio">Course
+github</a></p>
 <div id="before-class" class="section level2">
 <h2>Before class</h2>
 <p>Install <a href="https://cran.r-project.org/">R</a> first, then <a href="https://posit.co/download/rstudio-desktop/">RStudio Desktop</a>.
@@ -2964,7 +2966,7 @@ height in metres squared.</p>
 1.69 m tall. Calculate the BMI using different object names so that you
 retain both results.</li>
 <li>What is the change in the BMI?</li>
-<li>A height is reported as 172 cm. Create <code>height_cm</code> and
+<li>A height is reported as 168 cm. Create <code>height_cm</code> and
 convert it to metres in R before calculating a BMI. Explain why the
 units matter.</li>
 <li>Add a comment explaining the difference between saving a script and
@@ -3639,7 +3641,9 @@ folder.</li>
 <li>Click <strong>Import</strong>.</li>
 </ol>
 <p>You should now see <code>follow_up_imported</code> in the Environment
-pane.</p>
+pane. Copy the import code generated in the Console into your R script.
+Keep the file path that RStudio generated for your computer. This lets
+you import the same file again later by running the code.</p>
 </div>
 <div id="core-task-3-check-the-imported-data" class="section level3">
 <h3>Core task 3: Check the imported data</h3>
@@ -3792,7 +3796,7 @@ write_csv(
 )</code></pre>
 <p>The checks should give:</p>
 <pre class="r"><code>dim(follow_up_imported)
-# 6 3
+# 6 4
 
 sum(is.na(follow_up_imported$pain_score))
 # 1

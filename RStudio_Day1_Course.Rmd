@@ -32,6 +32,8 @@ There are **six independent-work periods**. In each exercise:
 
 You are not expected to finish every extension or additional exercise. Extra tasks are a practice bank, not additional compulsory material. All small clinical datasets below are fictional. Thresholds are exercise definitions, not clinical recommendations.
 
+[Course github](https://github.com/jsepin/introduction-to-r-rstudio)
+
 ## Before class
 
 Install [R](https://cran.r-project.org/) first, then [RStudio Desktop](https://posit.co/download/rstudio-desktop/). Open RStudio once. Run the following in the Console before class if possible:
@@ -124,7 +126,7 @@ R distinguishes `bmi` from `Bmi`. Use meaningful names, avoid spaces, and do not
 
 1. At the second visit, the participant weighs 81 kg and is measured as 1.69 m tall. Calculate the BMI using different object names so that you retain both results.
 2. What is the change in the BMI?
-3. A height is reported as 172 cm. Create `height_cm` and convert it to metres in R before calculating a BMI. Explain why the units matter.
+3. A height is reported as 168 cm. Create `height_cm` and convert it to metres in R before calculating a BMI. Explain why the units matter.
 4. Add a comment explaining the difference between saving a script and storing an object in the Environment.
 
 **What to show:** a saved script, the updated BMI, and a short explanation of why recalculation is needed.
@@ -820,7 +822,7 @@ Then:
 4. Look at the preview.
 5. Click **Import**.
 
-You should now see `follow_up_imported` in the Environment pane.
+You should now see `follow_up_imported` in the Environment pane. Copy the import code generated in the Console into your R script. Keep the file path that RStudio generated for your computer. This lets you import the same file again later by running the code.
 
 ### Core task 3: Check the imported data
 
@@ -1003,7 +1005,7 @@ The checks should give:
 
 ```r
 dim(follow_up_imported)
-# 6 3
+# 6 4
 
 sum(is.na(follow_up_imported$pain_score))
 # 1

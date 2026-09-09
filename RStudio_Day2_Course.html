@@ -2763,15 +2763,17 @@ data</h3>
 blocks. Use the rendered HTML handout beside RStudio. Write and run your
 work in an ordinary R script called <code>day2.R</code>. You do not need
 to knit an R Markdown document yourself.</p>
-<p>The six exercises are labelled <strong>D2-E1</strong> to
-<strong>D2-E6</strong> so they cannot be confused with Monday’s
-exercises. Start with the core tasks. Use the hints, ask for help, and
-open solutions after attempting the task. Extensions and the practice
-bank are optional. You are not expected to finish every task.</p>
+<p>The six exercises are labelled <strong>E1</strong> to
+<strong>E6</strong> so they cannot be confused with Monday’s exercises.
+Start with the core tasks. Use the hints, ask for help, and open
+solutions after attempting the task. Extensions and the practice bank
+are optional. You are not expected to finish every task.</p>
 <p>Our aim is to select patients, create a variable, describe groups,
 and make an understandable figure. All rehabilitation data below are
 fictional. A change in these data is a description, not evidence that a
 programme caused an improvement.</p>
+<p><a href="https://github.com/jsepin/introduction-to-r-rstudio">Course
+github</a></p>
 <div id="before-class" class="section level2">
 <h2>Before class</h2>
 <p>Open RStudio and check that <code>library(tidyverse)</code> works. If
@@ -2799,7 +2801,7 @@ them.</p>
 <tbody>
 <tr class="odd">
 <td align="left">1</td>
-<td align="left">Welcome, setup, and D2-E1: Getting started again</td>
+<td align="left">Welcome, setup, and E1: Getting started again</td>
 </tr>
 <tr class="even">
 <td align="left">1</td>
@@ -2839,7 +2841,7 @@ them.</p>
 </tr>
 <tr class="odd">
 <td align="left">3</td>
-<td align="left">Histograms and D2-E6: A small complete analysis</td>
+<td align="left">Histograms and E6: A small complete analysis</td>
 </tr>
 <tr class="even">
 <td align="left">3</td>
@@ -3616,182 +3618,6 @@ package and run the dataset definition before the analysis. The core
 script can run without Monday’s Environment objects or file-selection
 clicks. Exported image files are separate from the R code that creates
 the plots.</p>
-</div>
-<div id="optional-practice-bank" class="section level1">
-<h1>Optional practice bank</h1>
-<p>These tasks are outside the three teaching blocks. Choose them later
-or after completing an extension. Each introduces a small additional
-idea from the original <code>course.Rmd</code>. None is required to
-complete D2-E1 to D2-E6.</p>
-<div id="b1-more-dplyr-verbs" class="section level2">
-<h2>B1: More dplyr verbs</h2>
-<p>Start from <code>rehab</code>.
-<code>rename(new_name = old_name)</code> changes a column name,
-<code>count(programme)</code> counts rows per programme, and
-<code>distinct(programme)</code> lists unique programme values.</p>
-<ol style="list-style-type: decimal">
-<li>Create <code>rehab_renamed</code> with <code>baseline_m</code>
-instead of <code>walk_before</code>.</li>
-<li>Count the patients in each programme.</li>
-<li>List the programme names without duplicates.</li>
-</ol>
-<details>
-<summary>
-Solution
-</summary>
-<pre class="r"><code>rehab_renamed &lt;- rehab |&gt; rename(baseline_m = walk_before)
-names(rehab_renamed)
-rehab |&gt; count(programme)  # 6 in each
-rehab |&gt; distinct(programme)</code></pre>
-</details>
-</div>
-<div id="b2-wide-and-long-measurements" class="section level2">
-<h2>B2: Wide and long measurements</h2>
-<p>Currently one row is one patient, with separate before and after
-columns. A long table can instead have one row per patient and
-measurement occasion. Keep the patient ID so the two occasions remain
-connected.</p>
-<p>Run this template, inspect the result, and answer: why are there 24
-rows, and how many distances are missing?</p>
-<pre class="r"><code>rehab_long &lt;- rehab |&gt;
-  select(patient_id, programme, walk_before, walk_after) |&gt;
-  pivot_longer(
-    cols = c(walk_before, walk_after),
-    names_to = &quot;occasion&quot;,
-    values_to = &quot;distance_m&quot;
-  )</code></pre>
-<p>Extension: use
-<code>pivot_wider(names_from = occasion, values_from = distance_m)</code>
-on <code>rehab_long</code> to return to separate before and after
-columns.</p>
-<details>
-<summary>
-Solution
-</summary>
-<pre class="r"><code>dim(rehab_long)  # 24 rows, 4 columns
-sum(is.na(rehab_long$distance_m))  # 2
-rehab_long |&gt; count(occasion)  # 12 before and 12 after
-rehab_wide &lt;- rehab_long |&gt;
-  pivot_wider(names_from = occasion, values_from = distance_m)
-dim(rehab_wide)  # 12 rows, 4 columns
-# The selected data did not include age, so it is not restored.</code></pre>
-</details>
-</div>
-<div id="b3-join-information-using-an-id" class="section level2">
-<h2>B3: Join information using an ID</h2>
-<p>The first table has three patients. The second contains appointment
-information for only two of them.</p>
-<pre class="r"><code>people &lt;- data.frame(patient_id = c(&quot;A01&quot;, &quot;A02&quot;, &quot;A03&quot;),
-                     age = c(45, 62, 38))
-visits &lt;- data.frame(patient_id = c(&quot;A03&quot;, &quot;A01&quot;),
-                     appointments = c(4, 6))
-joined &lt;- left_join(people, visits, by = &quot;patient_id&quot;)
-joined</code></pre>
-<ol style="list-style-type: decimal">
-<li>Explain why A01 receives six appointments even though the second
-table has a different order.</li>
-<li>Explain the missing value for A02.</li>
-<li>Check the number of rows. The IDs are unique in each input here.
-Repeated matching IDs can produce extra rows, so checking the result
-matters.</li>
-</ol>
-<details>
-<summary>
-Solution
-</summary>
-<pre class="r"><code>dim(joined)  # 3 rows, 3 columns
-# Matching is by patient_id, not row position.
-# A01: 6 appointments. A02: NA. A03: 4 appointments.
-# left_join keeps all patients in the first table.</code></pre>
-</details>
-</div>
-<div id="b4-a-boxplot-and-a-simple-regression-with-support" class="section level2">
-<h2>B4: A boxplot and a simple regression, with support</h2>
-<p>Use this after the core exercises, ideally with an instructor. Rerun
-the <code>rehab_change</code> definition from Section 2.1.</p>
-<pre class="r"><code>ggplot(rehab_change, aes(x = programme, y = change_m)) +
-  geom_boxplot(na.rm = TRUE) +
-  geom_point(na.rm = TRUE) +
-  labs(x = &quot;Programme&quot;, y = &quot;Change (m)&quot;)</code></pre>
-<p>The box spans the middle half of the recorded changes and its line
-marks the median. There are only five recorded changes per programme.
-The points show their individual values, although equal values can
-overlap. <code>na.rm = TRUE</code> suppresses the missing-row warning
-here, so explicitly report the two missing changes.</p>
-<p>For an optional modelling example, fit a straight-line relationship
-between age and baseline walking distance:</p>
-<pre class="r"><code>age_model &lt;- lm(walk_before ~ age, data = rehab)
-coef(age_model)
-summary(age_model)</code></pre>
-<p>The expression <code>walk_before ~ age</code> says to model baseline
-distance using age. The age coefficient is the fitted difference in
-metres associated with one extra year of age. It is an association in
-fictional data, not a causal effect. No hypothesis testing is required
-here.</p>
-<p>Task: identify the sign of the age coefficient and complete this
-sentence: “In this fitted line, older age is associated with … baseline
-walking distance.”</p>
-<details>
-<summary>
-Answer
-</summary>
-<p>The age coefficient is negative, so complete the sentence with
-<strong>shorter</strong>. This model concerns baseline distance, not
-programme effectiveness. The intercept describes the fitted value at age
-zero, outside the ages in this dataset.</p>
-</details>
-</div>
-<div id="b5-save-a-summary-table-using-a-graphical-dialog" class="section level2">
-<h2>B5: Save a summary table using a graphical dialog</h2>
-<p>Run the D2-E4 solution first to create
-<code>programme_summary</code>. In RStudio, this command lets you choose
-the name of a new file. The <code>rstudioapi</code> package is needed.
-If unavailable, install it once in the Console with
-<code>install.packages(&quot;rstudioapi&quot;)</code>.</p>
-<pre class="r"><code>summary_path &lt;- rstudioapi::selectFile(
-  caption = &quot;Save programme summary&quot;,
-  label = &quot;Save&quot;,
-  filter = &quot;CSV files (*.csv)&quot;,
-  existing = FALSE
-)
-write_csv(programme_summary, file = summary_path)</code></pre>
-<p>Browse to <code>output</code>, enter
-<code>programme_summary.csv</code>, and confirm the selection. If you
-cancel, select a location again before running <code>write_csv()</code>.
-You do not need to construct a relative path. Re-import the file using
-Import Dataset &gt; From Text (readr), and check that it has two rows
-and five columns. Copy the generated import command into your script if
-you want to reuse it.</p>
-</div>
-<div id="b6-debug-and-explain" class="section level2">
-<h2>B6: Debug and explain</h2>
-<p>Start with <code>rehab</code>. Each case is independent. Run one at a
-time. The aim is to explain the problem and repair it.</p>
-<p><strong>A: A text value needs quotation marks.</strong></p>
-<pre class="r"><code>filter(rehab, programme == Home)</code></pre>
-<p><strong>B: The purpose is to create a change column.</strong></p>
-<pre class="r"><code>rehab |&gt; select(change_m = walk_after - walk_before)</code></pre>
-<p><strong>C: The purpose is to draw points.</strong></p>
-<pre class="r"><code>ggplot(rehab, aes(x = age, y = walk_before)) |&gt;
-  geom_point()</code></pre>
-<p><strong>D: The purpose is to colour points by programme.</strong></p>
-<pre class="r"><code>ggplot(rehab, aes(x = age, y = walk_before, colour = &quot;programme&quot;)) +
-  geom_point()</code></pre>
-<details>
-<summary>
-Solutions
-</summary>
-<pre class="r"><code>filter(rehab, programme == &quot;Home&quot;)
-rehab |&gt; mutate(change_m = walk_after - walk_before)
-ggplot(rehab, aes(x = age, y = walk_before)) + geom_point()
-ggplot(rehab, aes(x = age, y = walk_before, colour = programme)) +
-  geom_point()
-# A: Home was treated as an object name.
-# B: mutate creates a calculated column.
-# C: ggplot layers are added with +.
-# D: quoted &quot;programme&quot; is one text value, not the programme column.</code></pre>
-</details>
-</div>
 </div>
 
 
