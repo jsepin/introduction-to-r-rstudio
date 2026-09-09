@@ -1,0 +1,713 @@
+---
+title: "Introduction to R and RStudio"
+subtitle: "Day 2: Transforming and visualising health data"
+author: "Lukas Kauer & Jerome Sepin"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# How to use this course
+
+This is the optional Wednesday session: three 45-minute teaching blocks. Use the rendered HTML handout beside RStudio. Write and run your work in an ordinary R script called `day2.R`. You do not need to knit an R Markdown document yourself.
+
+The six exercises are labelled **D2-E1** to **D2-E6** so they cannot be confused with Monday's exercises. Start with the core tasks. Use the hints, ask for help, and open solutions after attempting the task. Extensions and the practice bank are optional. You are not expected to finish every task.
+
+Our aim is to select patients, create a variable, describe groups, and make an understandable figure. All rehabilitation data below are fictional. A change in these data is a description, not evidence that a programme caused an improvement.
+
+## Before class
+
+Open RStudio and check that `library(tidyverse)` works. If necessary, run `install.packages("tidyverse")` in the Console before class. Bring installation problems to the instructor. Use R 4.1 or later for the pipe `|>` used here.
+
+Create `day2.R` using **File > New File > R Script**, then save it inside the `code` folder from Monday. If you missed Monday, create an `intro` folder with `code`, `data`, and `output` folders using your computer's file manager. Ask for help finding or creating them.
+
+Run this at the start of your script:
+
+```{r}
+library(tidyverse)
+```
+
+## Outline
+
+| Block | Activity |
+|:--|:--|
+| 1 | Welcome, setup, and D2-E1: Getting started again |
+| 1 | Select columns, filter rows, and connect steps |
+| 1 | E2: Prepare a patient list |
+| 1 | Sort a table |
+| 2 | Create variables with mutate() |
+| 2 | E3: Calculate walking-distance change |
+| 2 | Overall and group summaries |
+| 2 | E4: Describe the two programmes |
+| 3 | Build a scatter plot |
+| 3 | E5: Create and label a figure |
+| 3 | Histograms and D2-E6: A small complete analysis |
+| 3 | Save your work and close |
+
+# Block 1: Select and organise data
+
+## 1.1 Our rehabilitation dataset
+
+Twelve patients attended either a group programme or a home programme. Walking distance was measured before and after the programme. Each row is one patient. `NA` means a measurement was not recorded.
+
+| Column | Meaning |
+|:--|:--|
+| `patient_id` | Fictional patient identifier |
+| `programme` | `"Group"` or `"Home"` |
+| `age` | Age in years |
+| `walk_before` | Walking distance before the programme, in metres |
+| `walk_after` | Walking distance after the programme, in metres |
+
+Copy and run the **entire** definition below. This is our fresh starting point and does not depend on completing Monday's exercises. If you accidentally change `rehab`, run this definition again.
+
+```{r}
+rehab <- data.frame(
+  patient_id = c("R01", "R02", "R03", "R04", "R05", "R06",
+                 "R07", "R08", "R09", "R10", "R11", "R12"),
+  programme = c("Group", "Home", "Group", "Home", "Group", "Home",
+                "Group", "Home", "Group", "Home", "Group", "Home"),
+  age = c(45, 62, 38, 71, 56, 49, 67, 54, 43, 60, 52, 65),
+  walk_before = c(300, 250, 420, 180, 350, 390,
+                  220, 310, 460, 280, 330, 240),
+  walk_after = c(340, 270, 450, 180, 400, NA,
+                 250, 330, 480, 270, NA, 260)
+)
+```
+
+## E1: Getting started again
+
+**Situation:** Check the data you have just received. Use Monday’s handout if you need it.
+
+**Core tasks**
+
+1. Run the dataset definition in Section 1.1. Display its dimensions and column names.
+2. Calculate mean age and count the missing values in `walk_after`.
+3. The command `mean(rehab$walk_after)` returns `NA`. Adapt it to calculate the mean among recorded distances.
+
+**What to show:** 12 rows, 5 columns, mean age 55.17 years, 2 missing follow-up distances, and observed mean follow-up distance 323 m. Save your script.
+
+<details>
+<summary>Hint: open if you need a starting point</summary>
+
+Use `dim(rehab)`, `names(rehab)`, `mean()`, and `sum(is.na(...))`. A column is accessed with `$`. `na.rm = TRUE` excludes missing values for a calculation.
+
+</details>
+
+**Finished? Try these extensions.**
+
+1. Display the IDs with missing follow-up distances.
+2. Fix `mean(rehab$Age)` and explain the spelling problem.
+
+<details>
+<summary>Core solution: open after your attempt</summary>
+
+```{r}
+dim(rehab)
+names(rehab)
+mean(rehab$age)                        # 55.16667
+sum(is.na(rehab$walk_after))           # 2
+mean(rehab$walk_after, na.rm = TRUE)   # 323
+```
+
+</details>
+
+<details>
+<summary>Extension solutions</summary>
+
+```{r}
+rehab$patient_id[is.na(rehab$walk_after)]  # R06, R11
+mean(rehab$age)  # age is lower-case. rehab$Age returns NULL.
+```
+
+</details>
+
+## 1.2 Choose columns with select()
+
+`select()` keeps the columns you name. It keeps all rows.
+
+```{r}
+select(rehab, patient_id, age, walk_before)
+```
+
+The table is the first argument. Inside `select()`, use the column names directly. You do not need `rehab$age` here.
+
+## 1.3 Choose rows with filter()
+
+`filter()` keeps rows for which a condition is `TRUE`.
+
+```{r}
+filter(rehab, age >= 60)
+filter(rehab, programme == "Home")
+```
+
+Use quotation marks around the text value `"Home"`. Use `==` to compare values. `filter()` keeps all the columns unless you also use `select()`.
+
+## 1.4 Connect steps with the pipe
+
+Read `|>` as **and then**. It sends the result of one step into the next function as its first argument.
+
+```{r}
+older_patients <- rehab |>
+  filter(age >= 60) |>
+  select(patient_id, age, walk_before)
+older_patients
+```
+
+Start with `rehab`, keep patients aged at least 60, and then keep three columns. `<-` stores the finished table. `rehab` is unchanged.
+
+Select the **whole connected command**, from `older_patients <-` through the last closing parenthesis, and click Run. Running only `select(patient_id, age, walk_before)` leaves out the table it needs. Copy the `|>` symbol from this handout if you cannot find it on your keyboard.
+
+## E2: Prepare a patient list
+
+**Situation:** A coordinator wants the home-programme patients aged at least 60 and their recorded distances. Start from `rehab` in Section 1.1.
+
+**Core tasks**
+
+1. Use `select()` to display only `patient_id`, `programme`, and `age` for all patients.
+2. Use `filter()` to display all home-programme patients. Check how many rows you get.
+3. Connect steps with `|>` to keep home-programme patients aged at least 60, then keep `patient_id`, `age`, and `walk_after`. Store the result as `home_older`.
+4. Display `home_older` and write a comment explaining what one row now represents.
+
+**What to show:** The first table has 12 rows, the home-only table has 6, and `home_older` contains R02, R04, R10, and R12 in that order.
+
+<details>
+<summary>Hint: open if you need a starting point</summary>
+
+Start with `rehab |> filter(programme == "Home")`. Add another `filter(age >= 60)` and then `select(...)`. Put `home_older <-` at the very beginning.
+
+</details>
+
+**Finished? Try these extensions.**
+
+1. Create a separate table for group-programme patients aged below 50.
+2. Find all patients whose follow-up distance is missing. Keep their IDs and programme.
+
+<details>
+<summary>Core solution: open after your attempt</summary>
+
+```{r}
+select(rehab, patient_id, programme, age)
+home_all <- filter(rehab, programme == "Home")
+dim(home_all)  # 6 rows, 5 columns
+home_older <- rehab |>
+  filter(programme == "Home") |>
+  filter(age >= 60) |>
+  select(patient_id, age, walk_after)
+home_older
+# One row is one Home patient aged at least 60.
+```
+
+</details>
+
+<details>
+<summary>Extension solutions</summary>
+
+```{r}
+rehab |>
+  filter(programme == "Group", age < 50)
+# R01, R03, R09
+rehab |>
+  filter(is.na(walk_after)) |>
+  select(patient_id, programme)
+# R06: Home, R11: Group
+```
+
+</details>
+
+## 1.5 Sort rows with arrange()
+
+`arrange()` changes the order of whole rows, so patient IDs remain connected to the correct measurements. The default is smallest to largest. `desc()` reverses that order.
+
+```{r}
+rehab |> arrange(age)
+rehab |> arrange(desc(age))
+```
+
+Both results still contain 12 rows. R04 is first when sorting age from largest to smallest. If you want to retain a sorted table, store it with `<-`.
+
+# Block 2: Create variables and summarise groups
+
+## 2.1 Create a column with mutate()
+
+We calculate walking-distance change as **after minus before**. A positive change means a longer distance at follow-up. A negative change means a shorter distance. A missing measurement produces a missing change.
+
+```{r}
+rehab_change <- rehab |>
+  mutate(change_m = walk_after - walk_before)
+```
+
+```{r}
+rehab_change |> select(patient_id, walk_before, walk_after, change_m)
+```
+
+`mutate()` adds the column while keeping all rows. `change_m` is the new column name. The expression on its right calculates the values. `rehab_change` is the name of the whole new table.
+
+## E3: Compare walking distances using a ratio
+
+**Situation:** The rehabilitation team wants to compare each patient's walking distance after the programme with their own starting distance.
+
+Calculate the ratio as:
+
+**Ratio = walking distance after / walking distance before**
+
+- A ratio of **1** means the distance stayed the same.
+- A ratio **above 1** means the patient walked further afterwards.
+- A ratio **below 1** means the patient walked less far afterwards.
+
+For example, a ratio of **1.20** means the distance afterwards was **20% higher** than before.
+
+**Core tasks**
+
+1. Start from `rehab`. Use `mutate()` to create a column called `distance_ratio`. Save the resulting table as `rehab_ratio`.
+2. Display only `patient_id`, `walk_before`, `walk_after`, and `distance_ratio`.
+3. Look at R01, R04, and R10. For each patient, write a short comment in your script saying whether their walking distance increased, stayed the same, or decreased.
+4. Keep patients with a ratio above 1. Save this table as `improved_ratio` and display it.
+
+**Check your results:** `rehab_ratio` should contain 12 rows and 6 columns. R01 has a ratio of approximately 1.13, R04 has 1, and R10 has approximately 0.96. Your `improved_ratio` table should contain 8 patients.
+
+<details>
+<summary>Hint: open if you need a starting point</summary>
+
+Adapt the `mutate()` example from Section 2.1. Change the new column name and replace subtraction with division (`/`).
+
+For task 4, use `filter(distance_ratio > 1)`.
+
+</details>
+
+**Finished? Try these extensions.**
+
+1. Sort `improved_ratio` from largest to smallest ratio. Which patient comes first?
+2. Add a column called `percent_change` using `(distance_ratio - 1) * 100`. What is the percentage change for R01?
+3. Identify the patients whose ratio is missing. Explain why it could not be calculated.
+
+<details>
+<summary>Core solution: open after your attempt</summary>
+
+```{r}
+rehab_ratio <- rehab |>
+  mutate(distance_ratio = walk_after / walk_before)
+
+rehab_ratio |>
+  select(patient_id, walk_before, walk_after, distance_ratio)
+
+# R01: increased by approximately 13.3%.
+# R04: stayed the same.
+# R10: decreased by approximately 3.6%.
+
+improved_ratio <- rehab_ratio |>
+  filter(distance_ratio > 1)
+improved_ratio
+```
+
+</details>
+
+<details>
+<summary>Extension solutions</summary>
+
+```{r}
+improved_ratio |>
+  arrange(desc(distance_ratio))
+# R05 has the largest ratio: approximately 1.143.
+
+rehab_percent <- rehab_ratio |>
+  mutate(percent_change = (distance_ratio - 1) * 100)
+
+rehab_percent |>
+  filter(patient_id == "R01") |>
+  select(patient_id, percent_change)
+# Approximately 13.3%.
+
+rehab_ratio |>
+  filter(is.na(distance_ratio)) |>
+  select(patient_id)
+# R06 and R11 have no recorded follow-up distance.
+```
+
+</details>
+
+## 2.2 Summarise the whole sample
+
+`summarise()` creates a small results table. Here the output contains one row for the whole sample. `n()` counts rows inside `summarise()`. It includes rows with a missing change.
+
+```{r}
+rehab_change <- rehab |>
+  mutate(change_m = walk_after - walk_before)
+```
+
+```{r}
+overall <- rehab_change |>
+  summarise(
+    n_patients = n(),
+    n_observed = sum(!is.na(change_m)),
+    mean_change_m = mean(change_m, na.rm = TRUE)
+  )
+overall
+```
+
+There are 12 patients and 10 observed changes. The mean of those 10 changes is 22 m. This is a mean of paired changes. Subtracting two means based on different patients can give a different answer.
+
+## 2.3 Summarise within groups
+
+`group_by(programme)` tells the next summary to calculate separately for each programme. It does not calculate the summary itself.
+
+```{r}
+programme_summary <- rehab_change |>
+  group_by(programme) |>
+  summarise(
+    n_patients = n(),
+    n_observed = sum(!is.na(change_m)),
+    mean_change_m = mean(change_m, na.rm = TRUE),
+    .groups = "drop"
+  )
+programme_summary
+```
+
+`.groups = "drop"` leaves the finished result as an ordinary ungrouped table. Keep this line in the template.
+
+Each output row now represents a programme, not an individual patient. `mutate()` adds a column to patient rows. `summarise()` reduces those rows to summaries.
+
+## E4: Describe starting distances and follow-up completeness
+
+**Situation:** Before looking at changes, the rehabilitation team wants to understand who started each programme and how many patients have a recorded follow-up measurement.
+
+Use the original `rehab` dataset for this exercise.
+
+**Core tasks**
+
+1. Create a table called `programme_overview` with one row per programme. Include:
+   - The total number of patients, called `n_patients`.
+   - The mean walking distance **before** the programme, called `mean_before_m`.
+   - The median walking distance **before** the programme, called `median_before_m`.
+2. Add a column called `n_missing_after` that counts patients with a missing follow-up distance.
+3. Display your table. Write two short comments in your script:
+   - Which programme had the higher mean starting distance?
+   - Does every patient have a follow-up measurement?
+
+**Check your results:** Your table should have 2 rows and 5 columns. Each programme has 6 patients and 1 missing follow-up measurement. The mean starting distance for Group is approximately 346.7 m.
+
+<details>
+<summary>Hint: open if you need a starting point</summary>
+
+Use the grouped summary example from Section 2.3, but change the variables and calculations.
+
+- Group the data using `group_by(programme)`.
+- `n()` counts patients within each programme.
+- Use `mean()` and `median()` on `walk_before`.
+- `sum(is.na(walk_after))` counts missing follow-up measurements.
+- Keep `.groups = "drop"` at the end.
+
+</details>
+
+**Finished? Try these extensions.**
+
+1. Add the number of recorded follow-up measurements, called `n_recorded_after`. Check that recorded plus missing measurements equals the total number of patients.
+2. Add the mean follow-up distance, using only recorded measurements. Explain why the starting mean and follow-up mean are not based on exactly the same patients.
+
+<details>
+<summary>Core solution: open after your attempt</summary>
+
+```{r}
+programme_overview <- rehab |>
+  group_by(programme) |>
+  summarise(
+    n_patients = n(),
+    mean_before_m = mean(walk_before),
+    median_before_m = median(walk_before),
+    n_missing_after = sum(is.na(walk_after)),
+    .groups = "drop"
+  )
+
+programme_overview
+
+# Group: 6 patients, mean 346.7 m, median 340 m,
+# and 1 missing follow-up measurement.
+
+# Home: 6 patients, mean 275 m, median 265 m,
+# and 1 missing follow-up measurement.
+
+# Group had the higher mean starting distance.
+# Neither programme has follow-up measurements for every patient.
+```
+
+</details>
+
+<details>
+<summary>Extension solutions</summary>
+
+```{r}
+rehab |>
+  group_by(programme) |>
+  summarise(
+    n_patients = n(),
+    n_recorded_after = sum(!is.na(walk_after)),
+    n_missing_after = sum(is.na(walk_after)),
+    mean_after_m = mean(walk_after, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Both programmes: 5 recorded + 1 missing = 6 patients.
+# Mean follow-up distance: Group 384 m, Home 262 m.
+
+# Starting distances are available for all six patients per programme.
+# Follow-up means use only five patients per programme.
+# Subtracting these means therefore does not give the mean
+# within-patient change.
+```
+
+</details>
+
+# Block 3: Visualise and explain your data
+
+## 3.1 A scatter plot, one part at a time
+
+A scatter plot shows two numeric variables. Here one point is one patient. Start with baseline walking distance and age, which have no missing values.
+
+```{r}
+ggplot(rehab, aes(x = age, y = walk_before)) +
+  geom_point()
+```
+
+`ggplot()` chooses the dataset. `aes()` chooses which variables control positions or colours. `geom_point()` draws the points. `+` adds plot layers. Use `+` between ggplot layers, not `|>`.
+
+To colour points by programme and add labels:
+
+```{r}
+baseline_plot <- ggplot(
+  rehab, aes(x = age, y = walk_before, colour = programme)
+) +
+  geom_point(size = 3) +
+  labs(
+    title = "Walking distance before the programme",
+    x = "Age (years)",
+    y = "Walking distance (m)",
+    colour = "Programme"
+  )
+baseline_plot
+```
+
+The plot appears in the **Plots** pane. If you store it with `<-`, run its name to display it. Select the entire plot command when running it.
+
+Column names such as `age` go inside `aes()` without quotation marks. A label such as `"Age (years)"` is text and needs quotation marks. `colour = programme` maps a variable. `geom_point(colour = "blue")` gives every point the same colour.
+
+## E5: Create and label a figure
+
+**Situation:** The team wants to compare walking distance before and after the programme visually. Use the original `rehab` table.
+
+**Core tasks**
+
+1. Create `plot_data` by filtering `rehab` to keep patients with recorded `walk_after`. Confirm that it has 10 rows.
+2. Build a scatter plot with `walk_before` on the x-axis and `walk_after` on the y-axis. Add points.
+3. Colour the points by `programme`. Add a title and axis labels with metres as the unit. Store the plot as `followup_plot`, then display it.
+4. Write one sentence explaining what one point represents and why two patients are absent.
+
+**What to show:** A labelled plot of 10 patients, with a programme legend. You can identify the horizontal and vertical measurements for R01 (300 m and 340 m).
+
+<details>
+<summary>Hint: open if you need a starting point</summary>
+
+Use `filter(!is.na(walk_after))`. Adapt the Section 3.1 plot template, using `plot_data` as the dataset. Add `colour = programme` inside `aes()`.
+
+</details>
+
+**Finished? Try these extensions.**
+
+1. Add `theme_minimal()` as another layer. This changes appearance, not the data.
+2. Add `geom_abline(intercept = 0, slope = 1, linetype = "dashed")`. This marks equal before and after distances. Explain points above this line.
+3. Save the displayed plot: in Plots choose Export > Save as Image, browse to `output`, enter `walking_before_after.png`, and click Save.
+
+<details>
+<summary>Core solution: open after your attempt</summary>
+
+```{r}
+plot_data <- rehab |> filter(!is.na(walk_after))
+dim(plot_data)  # 10 rows, 5 columns
+followup_plot <- ggplot(
+  plot_data,
+  aes(x = walk_before, y = walk_after, colour = programme)
+) +
+  geom_point(size = 3) +
+  labs(
+    title = "Walking distance before and after the programme",
+    x = "Before (m)", y = "After (m)", colour = "Programme"
+  )
+followup_plot
+# Each point is a patient with a recorded follow-up distance.
+# R06 and R11 are absent because that measurement is missing.
+```
+
+</details>
+
+<details>
+<summary>Extension solutions</summary>
+
+```{r}
+followup_plot + theme_minimal()
+followup_plot +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed")
+# Above the line: after is greater than before.
+# Export uses the Plots pane. Save your R script as well.
+```
+
+</details>
+
+## 3.2 Show a distribution with a histogram
+
+A histogram counts observations in intervals of one numeric variable. The y-axis is a count, not the name of another patient variable. Here we show baseline walking distances for all 12 patients.
+
+```{r}
+ggplot(rehab, aes(x = walk_before)) +
+  geom_histogram(binwidth = 50, boundary = 0, colour = "white") +
+  labs(x = "Walking distance before (m)", y = "Number of patients")
+```
+
+`binwidth = 50` uses intervals 50 metres wide. `boundary = 0` anchors the interval boundaries at multiples of 50. These choices affect appearance. With only 12 patients, the plot is a coding example, not a reliable picture of a population distribution.
+
+If a plot is made from data containing missing x or y values, ggplot may warn that it removed rows. Check the required variables and count missing values. Do not assume that every row was plotted.
+
+## E6: A small complete analysis
+
+**Situation:** Describe weight change across three treatment groups in a study of anorexia. This task connects the operations you have practised, using a new dataset.
+
+### Get the dataset
+
+The dataset is included in the `MASS` package. Run:
+
+```{r}
+library(tidyverse)
+anorexia <- MASS::anorexia
+```
+
+`MASS::anorexia` accesses the dataset directly from the package. We store a copy called `anorexia` in our Environment. You do not need to run `library(MASS)`.
+
+If R reports that there is no package called `MASS`, run `install.packages("MASS")` in the Console once. Then run the code above again.
+
+Each row represents one patient.
+
+| Column | Meaning |
+|:--|:--|
+| `Treat` | Treatment group: `"Cont"` = control, `"CBT"` = cognitive behavioural treatment, `"FT"` = family treatment |
+| `Prewt` | Weight before the study period, in pounds |
+| `Postwt` | Weight after the study period, in pounds |
+
+**Core tasks**
+
+1. Starting from `anorexia`, use `mutate()` to create `change_lb` as weight after minus weight before. Store the resulting dataset as `anorexia_changes`.
+2. Use `group_by()` and `summarise()` to create a table called `treatment_summary`. For each treatment group, include the number of patients and the mean weight change.
+3. Create a histogram of weight changes across all patients. Use `binwidth = 5` and label both axes. You may copy the histogram template and adapt it.
+4. Write two comments: Which treatment group had the largest mean weight gain? What does one histogram bar count? Save `day2.R`.
+
+**Check your results:** Your summary should have three rows. CBT has 29 patients, Cont has 26, and FT has 17. Mean change in the FT group is approximately +7.26 pounds. A positive change means weight increased.
+
+**Minimum success:** Finish tasks 1 and 2, then continue with the plot.
+
+<details>
+<summary>Hint: open if you need a starting point</summary>
+
+The change calculation is `Postwt - Prewt`. Column names are case-sensitive.
+
+Use `group_by(Treat)` before `summarise()`. Inside the summary, use `n()` to count patients and `mean(change_lb)` to calculate the mean change. There are no missing weights in this dataset.
+
+For the histogram, use `anorexia_changes`, which contains individual patients. The summary table contains only three group means.
+
+</details>
+
+**Finished? Try these extensions.**
+
+1. The team also wants to know how many patients gained weight in each treatment group. Add `n_gained` to your summary. A patient gained weight if `change_lb > 0`.
+2. Create a scatter plot with weight before on the horizontal axis and weight after on the vertical axis. Colour the points by treatment group and label both axes with their units.
+
+<details>
+<summary>Hints for the extensions</summary>
+
+For task 1, remember that `sum()` can count TRUE values. Use the condition `change_lb > 0` inside `sum()`.
+
+For task 2, adapt the scatter-plot example from earlier. Use the individual-patient dataset `anorexia_changes`. Inside `aes()`, use `Prewt`, `Postwt`, and `Treat`.
+
+</details>
+
+
+
+<details>
+<summary>Core solution: open after your attempt</summary>
+
+```{r}
+anorexia_changes <- anorexia |>
+  mutate(change_lb = Postwt - Prewt)
+
+treatment_summary <- anorexia_changes |>
+  group_by(Treat) |>
+  summarise(
+    n_patients = n(),
+    mean_change_lb = mean(change_lb),
+    .groups = "drop"
+  )
+
+treatment_summary
+
+# CBT: 29 patients, mean change approximately +3.01 pounds.
+# Cont: 26 patients, mean change -0.45 pounds.
+# FT: 17 patients, mean change approximately +7.26 pounds.
+
+weight_histogram <- ggplot(anorexia_changes, aes(x = change_lb)) +
+  geom_histogram(binwidth = 5, boundary = 0, colour = "white") +
+  labs(
+    title = "Recorded weight change across all treatment groups",
+    x = "Weight change: after minus before (pounds)",
+    y = "Number of patients"
+  )
+
+weight_histogram
+
+# Family treatment had the largest observed mean weight gain.
+# Each bar counts patients whose weight change falls in that interval,
+# combining all three treatment groups.
+# These summaries alone do not establish that one treatment is better.
+```
+
+</details>
+
+<details>
+<summary>Extension solutions</summary>
+
+```{r}
+anorexia_changes |>
+  group_by(Treat) |>
+  summarise(
+    n_patients = n(),
+    n_gained = sum(change_lb > 0),
+    mean_change_lb = mean(change_lb),
+    .groups = "drop"
+  )
+
+ggplot(
+  anorexia_changes,
+  aes(x = Prewt, y = Postwt, colour = Treat)
+) +
+  geom_point(size = 3) +
+  labs(
+    title = "Weight before and after the study period",
+    x = "Weight before (pounds)",
+    y = "Weight after (pounds)",
+    colour = "Treatment"
+  )
+```
+
+</details>
+
+
+
+# End-of-day check
+
+Can you explain which function chooses columns, which chooses rows, which creates a variable, and which creates a summary? Can you make a plot with units and explain what each point or bar represents? You may use the handout to answer.
+
+Keep your saved script. Next time you open a fresh session, load the package and run the dataset definition before the analysis. The core script can run without Monday's Environment objects or file-selection clicks. Exported image files are separate from the R code that creates the plots.
+
+
+

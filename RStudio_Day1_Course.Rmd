@@ -1,0 +1,1328 @@
+---
+title: "Introduction to R and RStudio"
+subtitle: "Day 1: Getting ready for Basic Research Methods"
+author: "Lukas Kauer & Jerome Sepin"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+# This is a handout. Run the displayed examples in your own R script.
+# Rendering the handout must not execute exercises or write student files.
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# How to use this course
+
+This optional introduction is for Master's students in health sciences who are new to R or would like supported practice before Basic Research Methods. This file covers **Monday only: three 45-minute blocks, 135 teaching minutes in total**. Data transformation with `dplyr` and plotting with `ggplot2` belong to Wednesday.
+
+Today you will learn to write and save a script, use objects and functions, work with vectors and missing values, inspect a data frame, and import and export a CSV file. Matrices receive a short introduction. You do not need an RStudio Project or an R Markdown workflow to participate.
+
+There are **six independent-work periods**. In each exercise:
+
+1. Run the starter code, if provided. You may copy a long dataset definition.
+2. Complete the **core tasks** in your own script, in order. These are the priority.
+3. If you finish early, attempt the **extension tasks**.
+4. Open a hint when needed. Ask for help if you remain stuck.
+5. Open the solution after your attempt and compare it with your own code.
+
+You are not expected to finish every extension or additional exercise. Extra tasks are a practice bank, not additional compulsory material. All small clinical datasets below are fictional. Thresholds are exercise definitions, not clinical recommendations.
+
+## Before class
+
+Install [R](https://cran.r-project.org/) first, then [RStudio Desktop](https://posit.co/download/rstudio-desktop/). Open RStudio once. Run the following in the Console before class if possible:
+
+```{r}
+install.packages("tidyverse")
+```
+
+Bring your laptop, charger, and any installation error. The first two blocks need only base R.
+
+## Outline
+
+| Block | Activity |
+|:--|:--|
+| 1 | Getting started with R and RStudio |
+| 1 | E1: A participant's BMI |
+| 1 | Using functions and getting help |
+| 1 | E2: Clinic waiting times |
+| 2 | Vectors, types, conditions, and indexing |
+| 2 | E3: Identify records for follow-up |
+| 2 | Missing measurements |
+| 2 | E4: Oxygen-saturation records |
+| 2 | A brief introduction to matrices |
+| 3 | Data frames and inspection |
+| 3 | E5: Describe the clinic sample |
+| 3 | Packages and CSV files |
+| 3 | E6: Save, import, check, and save again |
+
+# 1. RStudio and a simple working structure
+
+## 1.1 R and RStudio
+
+R performs calculations. RStudio is an interface for writing code, viewing results, and organising files. In the default layout:
+
+- **Source:** write and save instructions in a script. It appears when a script is open.
+- **Console:** execute commands and read output. `>` means R is ready.
+- **Environment:** inspect objects currently in memory.
+- **Files, Plots, Packages, Help:** navigate files, see results, and find documentation.
+
+The layout can be customised. We will leave appearance settings for a break.
+
+## 1.2 Create and save a script
+
+Choose **File > New File > R Script**. Type `1 + 1` in the script. Place the cursor on that line and use **Run**, or `Ctrl + Enter` on Windows and `Cmd + Enter` on macOS. To run several lines, select them first.
+
+Create a main folder called `intro` wherever you normally store your course work. Inside it, create `code`, `data`, and `output` folders. Save your script as `day1.R` inside the `code` folder.
+
+| Folder | What belongs here |
+|:--|:--|
+| `intro/code/` | Your `.R` scripts |
+| `intro/data/` | Original or input datasets |
+| `intro/output/` | Changed datasets and other results created in R |
+
+Remember where you stored the `intro` folder. Later, you will use familiar file-selection windows to open the `data` and `output` folders. You do not need to type the complete address of these folders yourself.
+
+# 2. Basic syntax, functions, and help
+
+## 2.1 Calculations, objects, and comments
+
+Use `+`, `-`, `*`, `/`, and `^` for arithmetic. Parentheses control the order of operations. We will practise these through a BMI calculation.
+
+```{r}
+72 / 1.68^2
+
+# Calculate body mass index from weight and height
+weight_kg <- 72
+height_m <- 1.68
+bmi <- weight_kg / height_m^2
+bmi
+```
+
+`<-` stores the value on the right under the name on the left. A single numeric value is stored as a vector of length one in R. `bmi` is an object name, not a permanently linked spreadsheet formula.
+
+```{r}
+weight_kg <- 90
+bmi                         # still the previously calculated value
+bmi <- weight_kg / height_m^2
+bmi                         # updated after rerunning the calculation
+```
+
+Change the original input line in your final script rather than keeping contradictory versions of it. Running single lines is useful while learning. Before considering an analysis finished, check that the complete script runs in order and does not depend on forgotten Console commands.
+
+R distinguishes `bmi` from `Bmi`. Use meaningful names, avoid spaces, and do not start ordinary object names with a digit. Text values need quotation marks. A `#` starts a comment that R ignores for the rest of the line.
+
+## E1. A participant's BMI
+
+**Situation:** At the first visit, a participant weighs the 72 kg and is 1.68 m tall. You want a saved calculation that you can update after the next visit. BMI is weight in kilograms divided by height in metres squared.
+
+**Core tasks**
+
+1. At the second visit, the participant weighs 81 kg and is measured as 1.69 m tall. Calculate the BMI using different object names so that you retain both results.
+2. What is the change in the BMI?
+3. A height is reported as 172 cm. Create `height_cm` and convert it to metres in R before calculating a BMI. Explain why the units matter.
+4. Add a comment explaining the difference between saving a script and storing an object in the Environment.
+
+**What to show:** a saved script, the updated BMI, and a short explanation of why recalculation is needed.
+
+<details>
+<summary>Hint 1: Which operations do I need?</summary>
+
+Use `<-` to create objects, `/` to divide, and `^2` to square height. Type an object name on its own to display its value.
+
+</details>
+
+<details>
+<summary>Hint 2: Start one line</summary>
+
+```{r}
+weight_kg <- 72
+# Create height_m next, then calculate bmi from the two objects.
+```
+
+</details>
+
+<details>
+<summary>Check after attempting: one solution</summary>
+
+```{r}
+# First visit
+weight_kg <- 72
+height_m <- 1.68
+bmi <- weight_kg / height_m^2
+bmi                         # 25.5102
+
+# Second visit
+weight_second <- 81
+height_second <- 1.69
+bmi_second <- weight_second / height_second^2
+bmi_second                  # 28.36035
+
+# difference
+bmi_second - bmi            # 2.850147
+
+# Unit conversion
+height_cm <- 168
+height_converted <- height_cm / 100
+72 / height_converted^2
+```
+
+</details>
+
+## 2.2 Using functions and getting help
+
+A function performs a task. Arguments inside parentheses provide its inputs or options. Named arguments make their role clearer.
+
+```{r}
+round(25.5102, digits = 1)
+round(x = 25.5102, digits = 1)
+
+# c() combines several measurements into a vector
+heart_rate <- c(72, 81, 76, 94, 68)
+length(heart_rate)
+mean(heart_rate)
+median(heart_rate)
+min(heart_rate)
+max(heart_rate)
+sum(heart_rate)
+```
+
+`length()` counts measurements. `sum()` adds their values, which is a different question. A function can take another function's result as input:
+
+```{r}
+round(mean(heart_rate), digits = 1)
+```
+
+Use `?mean`, `?round`, or `help(mean)` to open a help page. Look at **Usage**, **Arguments**, and **Examples**. You can read the example code without running every example. You do not need to memorise all arguments.
+
+## E2. Clinic waiting times
+
+**Situation:** A clinic recorded waiting times in minutes for eight consecutive patients. The clinic manager needs a short numerical description.
+
+**Starter code: run this first.**
+
+```{r}
+waiting_time <- c(12, 18, 9, 35, 21, 15, 27, 11)
+```
+
+**Core tasks**
+
+1. Determine how many waiting times were recorded. Then calculate the total waiting minutes. Explain why these are not the same number.
+2. Calculate the mean and median waiting times. Store the mean as `mean_waiting_time`.
+3. Find the shortest and longest waiting times.
+4. Open `?round`. Use the appropriate argument to display the mean with one decimal place. Write one sentence reporting the number of patients and their mean waiting time, including the unit.
+
+**Finished? Extend the analysis**
+
+5. Calculate the difference between the longest and shortest waiting times.
+6. Create a second vector containing the original eight values and an additional waiting time of 90 minutes. Compare its mean and median with the original results. Describe what changed, without claiming that eight patients represent the whole clinic.
+
+**What to show:** your commands, a rounded mean, and one written sentence.
+
+<details>
+<summary>Hint 1: Function names</summary>
+
+Use `length()`, `sum()`, `mean()`, `median()`, `min()`, `max()`, and `round()`. The argument `digits` controls decimal places.
+
+</details>
+
+<details>
+<summary>Hint 2: Two steps are also fine</summary>
+
+```{r}
+mean_waiting_time <- mean(waiting_time)
+round(mean_waiting_time, digits = 1)
+```
+
+</details>
+
+<details>
+<summary>Check after attempting: one solution</summary>
+
+```{r}
+waiting_time <- c(12, 18, 9, 35, 21, 15, 27, 11)
+length(waiting_time)         # 8 patients
+sum(waiting_time)            # 148 patient-minutes
+mean_waiting_time <- mean(waiting_time)
+mean_waiting_time            # 18.5 minutes
+median(waiting_time)         # 16.5 minutes
+min(waiting_time)            # 9
+max(waiting_time)            # 35
+round(mean_waiting_time, digits = 1)
+
+# Extensions
+max(waiting_time) - min(waiting_time)  # 26 minutes
+waiting_time_extra <- c(waiting_time, 90)
+mean(waiting_time_extra)     # about 26.44
+median(waiting_time_extra)   # 18
+```
+
+Example report: "Among these eight patients, the mean waiting time was 18.5 minutes." The extra long wait changes the mean more than the median in this example.
+
+</details>
+
+# 3. Vectors, conditions, and missing values
+
+## 3.1 Types and positions
+
+Numeric vectors store measurements, character vectors store text, and logical vectors store `TRUE` or `FALSE`. Here, the same position in each vector refers to the same patient.
+
+```{r}
+age <- c(34, 51, 46, 29, 63)
+diagnosis <- c("Asthma", "Diabetes", "Asthma",
+               "Hypertension", "Diabetes")
+smoker <- c(FALSE, TRUE, FALSE, FALSE, TRUE)
+class(age)
+class(diagnosis)
+class(smoker)
+length(age)
+```
+
+Combining numbers and text in an ordinary vector can turn the numbers into text. Check the type if a calculation behaves unexpectedly.
+
+## 3.2 Logical conditions
+
+```{r}
+age >= 50
+diagnosis == "Diabetes"
+age >= 50 & smoker
+diagnosis == "Asthma" | diagnosis == "Diabetes"
+!smoker
+```
+
+`>=` means at least, `>` means greater than, `==` tests equality, and `!=` means not equal. `&` means and, `|` means or, and `!` means not. These are element-by-element comparisons for these vectors. Use `==` for a comparison, not `=`.
+
+## 3.3 Selecting elements
+
+```{r}
+age[1]
+age[2:4]
+age[c(1, 5)]
+age[age >= 50]
+diagnosis[smoker]
+
+older <- age >= 50
+sum(older)                  # TRUE counts as 1, FALSE as 0
+sum(older) / length(age) * 100
+```
+
+Inside square brackets, positions or a logical vector identify the elements to keep. Preserve alignment between the vectors when selecting patient IDs from a condition on measurements.
+
+## E3. Identify records for follow-up
+
+**Situation:** For this exercise, a clinic flags systolic blood-pressure measurements of at least 140 mmHg for record review. This is a simplified coding rule, not a diagnosis.
+
+**Starter code: run both lines.**
+
+```{r}
+patient_id <- c("P01", "P02", "P03", "P04", "P05", "P06")
+systolic_bp <- c(128, 146, 137, 155, 142, 119)
+```
+
+**Core tasks**
+
+1. Check the type and length of both vectors. Explain why their lengths must match in this example.
+2. Create `needs_follow_up`, which is `TRUE` when systolic blood pressure is at least 140. Display it.
+3. Use this logical vector to display the relevant patient IDs and their blood-pressure values.
+4. Calculate the number and percentage of records flagged. Write one sentence naming the denominator of the percentage.
+
+**Finished? Extend the analysis**
+
+5. Repeat with a threshold of at least 150, without overwriting `needs_follow_up`. How does the count change?
+6. Select IDs for measurements at least 130 but below 150. Use two conditions joined by `&`.
+7. A physiotherapist records walking distances `c(210, 340, 180, 420, 290, 360)` metres for the same patients in the same order. For an exercise-only cutoff below 300 metres, return the relevant IDs and calculate the number selected.
+
+**What to show:** the logical vector, selected IDs, and a percentage with its denominator.
+
+<details>
+<summary>Hint 1: A condition can be stored</summary>
+
+Create a comparison with `>=`. Store it using `<-`. Use that object inside `patient_id[...]` and `systolic_bp[...]`.
+
+</details>
+
+<details>
+<summary>Hint 2: Count and percentage</summary>
+
+`sum(needs_follow_up)` counts `TRUE` entries. Divide that count by `length(patient_id)` and multiply by 100.
+
+</details>
+
+<details>
+<summary>Check after attempting: one solution</summary>
+
+```{r}
+patient_id <- c("P01", "P02", "P03", "P04", "P05", "P06")
+systolic_bp <- c(128, 146, 137, 155, 142, 119)
+class(patient_id)
+class(systolic_bp)
+length(patient_id)
+length(systolic_bp)
+needs_follow_up <- systolic_bp >= 140
+needs_follow_up
+patient_id[needs_follow_up]  # P02, P04, P05
+systolic_bp[needs_follow_up] # 146, 155, 142
+sum(needs_follow_up)        # 3
+sum(needs_follow_up) / length(patient_id) * 100  # 50
+
+# Extensions
+follow_up_150 <- systolic_bp >= 150
+sum(follow_up_150)          # 1
+patient_id[systolic_bp >= 130 & systolic_bp < 150]
+# P02, P03, P05
+walking_distance <- c(210, 340, 180, 420, 290, 360)
+patient_id[walking_distance < 300]  # P01, P03, P05
+sum(walking_distance < 300)        # 3
+```
+
+Example report: "Three of the six records (50%) meet the exercise's review rule."
+
+</details>
+
+## 3.4 Missing measurements
+
+`NA` means that a value is missing. Zero is an observed value, not a substitute for missingness.
+
+```{r}
+pain_score <- c(4, 7, NA, 2, 5, NA)
+mean(pain_score)                 # NA
+mean(pain_score, na.rm = TRUE)   # mean among recorded scores
+is.na(pain_score)
+sum(is.na(pain_score))
+observed <- !is.na(pain_score)
+pain_score[observed]
+sum(observed)
+```
+
+`na.rm = TRUE` excludes missing values for that calculation. It does not fill them in or guarantee an unbiased estimate. Report how many observations contributed. Use `is.na(x)`, not `x == NA`.
+
+For a threshold comparison, avoid including missing positions in the selected values:
+
+```{r}
+pain_score[!is.na(pain_score) & pain_score >= 5]
+```
+
+## E4. Oxygen-saturation records
+
+**Situation:** Seven oxygen-saturation records are available, measured as percentages. You are checking completeness and summarising recorded values, not making treatment decisions.
+
+**Starter code**
+
+```{r}
+oxygen_saturation <- c(97, 94, NA, 91, 98, NA, 95)
+```
+
+**Core tasks**
+
+1. Count all records, missing values, and observed values.
+2. Calculate the percentage of all seven records that are missing.
+3. Run `mean(oxygen_saturation)`. Explain the result, then calculate the mean using only observed values.
+4. Write a sentence reporting the observed mean and how many measurements contributed. Explain why replacing `NA` with zero would answer a different question.
+
+**Finished? Extend the analysis**
+
+5. Return only observed values below 95, with no `NA` in the result.
+6. Calculate the percentage of **observed** measurements below 95. State the denominator explicitly and compare it with the total number of records.
+7. Copy the vector `oxygen_saturation`, name it as `oxygen_saturation_imp` and fill (impute) the missing values with the mean of the observed values.
+
+**What to show:** the missing count, observed mean, and a sentence identifying the observed sample size.
+
+<details>
+<summary>Hint 1: Separate missingness from measurement values</summary>
+
+Use `is.na()` to get a logical vector. Sum it to count missing values. Use `!is.na()` to identify observed values.
+
+</details>
+
+<details>
+<summary>Hint 2: Denominators</summary>
+
+The missing percentage uses all records as its denominator. A percentage among observed values uses only non-missing records as its denominator.
+
+</details>
+
+<details>
+<summary>Check after attempting: one solution</summary>
+
+```{r}
+oxygen_saturation <- c(97, 94, NA, 91, 98, NA, 95)
+n_records <- length(oxygen_saturation)
+n_missing <- sum(is.na(oxygen_saturation))
+n_observed <- sum(!is.na(oxygen_saturation))
+n_records                   # 7
+n_missing                   # 2
+n_observed                  # 5
+n_missing / n_records * 100 # about 28.57%
+mean(oxygen_saturation)     # NA
+mean(oxygen_saturation, na.rm = TRUE)  # 95
+
+# Extensions
+observed <- !is.na(oxygen_saturation)
+oxygen_saturation[observed & oxygen_saturation < 95]  # 94, 91
+sum(oxygen_saturation < 95, na.rm = TRUE) /
+  sum(observed) * 100        # 2 out of 5 = 40%
+
+oxygen_saturation_imp <- oxygen_saturation
+oxygen_saturation_imp[is.na(oxygen_saturation_imp)] <- mean(oxygen_saturation, na.rm = TRUE)
+```
+
+Example report: "The mean oxygen saturation was 95% among five recorded measurements. Two of seven records were missing." In the rehabilitation example, zero is a recorded pain score and should not be removed as if it were missing.
+
+</details>
+
+## 3.5 Matrices: brief orientation
+
+A matrix is rectangular, and its elements have the same basic type. Here each row is one patient and the columns contain two numeric measurements.
+
+```{r}
+vital_signs <- matrix(
+  c(120, 75, 128, 82, 140, 88),
+  nrow = 3, byrow = TRUE
+)
+colnames(vital_signs) <- c("systolic_bp", "heart_rate")
+vital_signs
+vital_signs[2, 1]            # row 2, column 1
+vital_signs[, 2]            # all rows, column 2
+```
+
+The two-minute demonstration is orientation, not matrix mastery. Additional practice B4 below provides creation and selection tasks outside the timed core.
+
+# 4. Working with data frames
+
+Rows represent observations and columns represent variables. A data frame can contain columns of different types. In this course, each row of `patients` represents one patient, with one position in each column.
+
+```{r}
+patients <- data.frame(
+  patient_id = c("P01", "P02", "P03", "P04", "P05", "P06"),
+  age = c(34, 51, 46, 29, 63, 57),
+  treatment = c("Control", "Intervention", "Control",
+                "Intervention", "Control", "Intervention"),
+  systolic_bp = c(128, 146, 137, 155, 142, NA),
+  smoker = c(FALSE, TRUE, FALSE, FALSE, TRUE, TRUE)
+)
+head(patients)
+dim(patients)
+names(patients)
+str(patients)
+summary(patients)
+patients$age
+mean(patients$age)
+```
+
+Use `$` to access a column. You can also add a new column. Work on a copy when demonstrating a change:
+
+```{r}
+patients_demo <- patients
+patients_demo$age_months <- patients_demo$age * 12
+names(patients_demo)
+```
+
+Inspect before calculating. Check variable names, types, missing values, units, and what one row represents. `dim()` gives rows first, then columns.
+
+## E5. Describe the clinic sample
+
+**Situation:** A colleague sends a small dataset and asks you to check it before further analysis. Use a fresh copy of the starter below, even if you ran the demonstration.
+
+```{r}
+patients <- data.frame(
+  patient_id = c("P01", "P02", "P03", "P04", "P05", "P06"),
+  age = c(34, 51, 46, 29, 63, 57),
+  treatment = c("Control", "Intervention", "Control",
+                "Intervention", "Control", "Intervention"),
+  systolic_bp = c(128, 146, 137, 155, 142, NA),
+  smoker = c(FALSE, TRUE, FALSE, FALSE, TRUE, TRUE)
+)
+```
+
+**Core tasks**
+
+1. Inspect the first rows, dimensions, and structure. State what one row represents and identify one numeric, one character, and one logical column.
+2. Calculate mean age and the number recorded as smokers.
+3. Count missing systolic blood-pressure measurements, then calculate the mean among recorded measurements.
+4. Return the patient IDs for people aged at least 50. Write two sentences describing the sample, using units and observed sample sizes where appropriate.
+
+**Finished? Extend the analysis**
+
+5. Create `patients_checked` as a copy. Add `bp_missing` using `is.na()`. Check that the new column is logical and that the original data frame still has five columns.
+6. Return IDs belonging to the `"Intervention"` group and calculate their mean age. These are descriptive results, not evidence of an intervention effect.
+7. Create a small data frame of your own for three fictional rehabilitation patients with patient ID, walking distance in metres, and treatment group. Inspect its dimensions and calculate mean distance.
+
+**What to show:** an inspection, requested summaries, selected IDs, and two written sentences.
+
+<details>
+<summary>Hint 1: Treat a column like a vector</summary>
+
+Use `patients$age`, `patients$smoker`, and `patients$systolic_bp` as inputs to functions you already know.
+
+</details>
+
+<details>
+<summary>Hint 2: Select IDs using another column</summary>
+
+Use a logical age condition inside `patients$patient_id[...]`.
+
+</details>
+
+<details>
+<summary>Check after attempting: one solution</summary>
+
+```{r}
+head(patients)
+dim(patients)                        # 6 rows, 5 columns
+str(patients)
+mean(patients$age)                   # about 46.67 years
+sum(patients$smoker)                 # 3
+sum(is.na(patients$systolic_bp))      # 1
+mean(patients$systolic_bp, na.rm = TRUE) # 141.6 mmHg
+patients$patient_id[patients$age >= 50] # P02, P05, P06
+
+# Extensions
+patients_checked <- patients
+patients_checked$bp_missing <- is.na(patients_checked$systolic_bp)
+class(patients_checked$bp_missing)
+dim(patients)                        # still 6 by 5
+intervention <- patients$treatment == "Intervention"
+patients$patient_id[intervention]    # P02, P04, P06
+mean(patients$age[intervention])     # about 45.67
+rehab <- data.frame(
+  patient_id = c("R01", "R02", "R03"),
+  distance_m = c(250, 320, 280),
+  treatment = c("A", "B", "A")
+)
+dim(rehab)
+mean(rehab$distance_m)
+```
+
+Example report: "The sample contains six patients, with mean age 46.7 years and three recorded smokers. Mean systolic blood pressure was 141.6 mmHg among five recorded measurements, with one missing value."
+
+</details>
+
+
+# 5. Packages and a complete CSV round trip
+
+## 5.1 Install once, load when needed
+
+Up to now, we have used functions that come with R by default. Packages provide additional functions and sometimes datasets.
+
+There are two separate steps when working with a package:
+
+1. **Install the package:** Do this once on your computer.
+2. **Load the package:** Repeat this when starting a new R session.
+
+Install the tidyverse only if it is not already installed:
+
+```{r}
+# Run this in the Console only if needed
+install.packages("tidyverse")
+```
+
+Load the tidyverse in the current session:
+
+```{r}
+library(tidyverse)
+```
+
+The tidyverse is a collection of packages. One of them is `readr`, which provides the functions for importing and exporting CSV files. Other tidyverse packages will be used on Wednesday.
+
+Installation can take a moment and may produce many messages in the Console. Wait until the command has finished and the `>` prompt appears again.
+
+Loading a package can also produce messages. A message is not necessarily an error. Errors are normally identified by the word `Error`.
+
+## 5.2 Select an absolute file location
+
+A file path tells R exactly where a file is stored on the computer. A complete file location is called an **absolute path**.
+
+Absolute paths differ between computers. You should therefore not copy an absolute path from another student or from the instructor.
+
+Instead of typing the path manually, use a file-selection window:
+
+```{r}
+save_path <- file.choose(new = TRUE)
+```
+
+A window will open. Navigate to your `intro` folder, open the `data` folder, enter the filename `patients_demo.csv`, and click **Save**.
+
+This command has not saved the dataset yet. It has only stored the selected file location in an R object called `save_path`.
+
+Display the selected location:
+
+```{r}
+save_path
+```
+
+You should see a long address ending with something similar to:
+
+```text
+data/patients_demo.csv
+```
+
+Your complete address will be different because the folder is stored in a different place on your computer.
+
+## 5.3 Save the patient dataset
+
+Use `write_csv()` to save the `patients` object at the selected location:
+
+```{r}
+write_csv(
+  patients,
+  file = save_path # or the direct path
+)
+```
+
+The first argument specifies the object that should be saved:
+
+```r
+patients
+```
+
+The second argument specifies where the file should be saved:
+
+```r
+output_path
+```
+
+Check that `patients_demo.csv` is now present in the `data` folder.
+
+## 5.4 Import the CSV file using RStudio
+
+Use the graphical import window in RStudio:
+
+1. Select **Import Dataset → From Text (readr)**.
+2. Click **Browse**.
+3. Select `patients_demo.csv` from the `data` folder.
+4. Enter `patients_imported` as the object name.
+5. Check the data preview.
+6. Click **Import**.
+
+RStudio will show the code that it used in the Console. Copy the generated import code into your R script.
+
+The generated code will look similar to this:
+
+```r
+library(readr)
+
+patients_imported <- read_csv(
+  "C:/Users/your_name/.../intro/data/patients_demo.csv"
+)
+```
+
+The exact file location will be different on every computer. Keep the path that RStudio generated on your own computer.
+
+The graphical window helps you select the file. The generated code records this selection so that you can import the same file again later without repeating all the clicks.
+
+RStudio generated the `library(readr)` command because `read_csv()` is provided by the `readr` package. R did not recognise and load the package automatically.
+
+## 5.5 Check the imported dataset
+
+The original object and the imported object can exist in R at the same time:
+
+```text
+patients
+patients_imported
+```
+
+The file on the computer is called `patients_demo.csv`. The object created inside R is called `patients_imported`. The file and the R object are related, but they are not the same thing.
+
+Check the size of the imported dataset:
+
+```{r}
+dim(patients_imported)
+```
+
+The expected result is:
+
+```text
+6 5
+```
+
+This means that the imported dataset has six rows and five columns.
+
+You can also click `patients_imported` in the Environment pane to inspect it.
+
+`read_csv()` may display a message explaining how it interpreted the columns. This is information and not necessarily an error. For now, check whether the object was created and whether it contains the expected rows and columns.
+
+
+## E6: Save, import, check, and save again
+
+**Work independently. Ask for help if the file-selection windows look different on your computer.**
+
+**Situation:** You received data from a small follow-up study. You will now repeat the complete workflow yourself:
+
+1. Save the original data in the `data` folder.
+2. Import the CSV file using RStudio.
+3. Check that the import worked.
+4. Add a new variable.
+5. Save the changed data in the `output` folder.
+
+### Before you begin
+
+Make sure that the tidyverse is loaded:
+
+```r
+library(tidyverse)
+```
+
+Run the following starter code:
+
+```r
+follow_up <- data.frame(
+  patient_id = c("P01", "P02", "P03", "P04", "P05", "P06"),
+  pain_score = c(4, 7, NA, 3, 6, 2),
+  walking_distance = c(420, 310, 280, 510, NA, 460)
+)
+```
+
+Do not change the starter data.
+
+### Core task 1: Save the original dataset
+
+Run:
+
+```r
+raw_path <- file.choose(new = TRUE)
+```
+
+In the window that opens:
+
+1. Open your `intro` folder.
+2. Open the `data` folder.
+3. Enter the filename `follow_up_raw.csv`.
+4. Click **Save**.
+
+Now use `write_csv()` to save `follow_up` at the location stored in `raw_path`.
+
+Complete the missing parts:
+
+```r
+write_csv(
+  __________,
+  file = __________
+)
+```
+
+Check outside RStudio that `follow_up_raw.csv` is present in the `data` folder.
+
+### Core task 2: Import the CSV file
+
+In RStudio, select:
+
+**Import Dataset → From Text (readr)**
+
+Then:
+
+1. Click **Browse**.
+2. Select `follow_up_raw.csv` from the `data` folder.
+3. Change the object name to `follow_up_imported`.
+4. Look at the preview.
+5. Click **Import**.
+
+You should now see `follow_up_imported` in the Environment pane.
+
+### Core task 3: Check the imported data
+
+Use R to answer the following questions:
+
+1. How many rows and columns does `follow_up_imported` have?
+2. What are its column names?
+3. How many pain scores are missing?
+4. How many walking distances are missing?
+
+The following functions may help:
+
+```r
+dim()
+names()
+is.na()
+sum()
+```
+
+Write one short sentence describing your checks.
+
+> Example structure: The imported dataset contains ... patients and ... variables. There are ... missing pain scores and ... missing walking distances.
+
+### Core task 4: Save a checked version
+
+Add a new column called `complete_record`.
+
+It should be `TRUE` if both the pain score and walking distance are available. Otherwise, it should be `FALSE`.
+
+Complete the code:
+
+```r
+follow_up_imported$complete_record <-
+  !is.na(____________________) &
+  !is.na(____________________)
+```
+
+Look at the new column:
+
+```r
+follow_up_imported$complete_record
+```
+
+Now select a location for the checked file:
+
+```r
+checked_path <- file.choose(new = TRUE)
+```
+
+In the window that opens:
+
+1. Open the `output` folder.
+2. Enter the filename `follow_up_checked.csv`.
+3. Click **Save**.
+
+Save `follow_up_imported` at this location:
+
+```r
+write_csv(
+  __________,
+  file = __________
+)
+```
+
+Finally, check outside RStudio that `follow_up_checked.csv` is present in the `output` folder.
+
+### Expected result
+
+At the end of the exercise, you should have:
+
+- `follow_up_raw.csv` in the `data` folder
+- `follow_up_checked.csv` in the `output` folder
+- an object called `follow_up_imported` in R
+- six rows and four columns in the checked dataset
+
+The `complete_record` column should contain:
+
+```r
+TRUE TRUE FALSE TRUE FALSE TRUE
+```
+
+### Extensions for early finishers
+
+1. Calculate the number of complete records.
+
+   ```r
+   sum(follow_up_imported$complete_record)
+   ```
+
+2. Calculate the mean pain score using only the available pain scores.
+
+3. Import `follow_up_checked.csv` into R under the name `checked_again`. Use `dim()` and `names()` to verify that it has six rows and four columns.
+
+### Hints
+
+<details>
+<summary>Hint 1: Saving the original data</summary>
+
+The object is called `follow_up`, and the selected file location is stored in `raw_path`.
+
+```r
+write_csv(follow_up, file = raw_path)
+```
+
+</details>
+
+<details>
+<summary>Hint 2: Counting missing values</summary>
+
+First use `is.na()` on the relevant column. Then use `sum()` to count the `TRUE` values.
+
+```r
+sum(is.na(follow_up_imported$pain_score))
+```
+
+</details>
+
+<details>
+<summary>Hint 3: Creating complete_record</summary>
+
+A record is complete when neither variable is missing:
+
+```r
+!is.na(follow_up_imported$pain_score) &
+  !is.na(follow_up_imported$walking_distance)
+```
+
+</details>
+
+<details>
+<summary>Solution</summary>
+
+```r
+library(tidyverse)
+
+follow_up <- data.frame(
+  patient_id = c("P01", "P02", "P03", "P04", "P05", "P06"),
+  pain_score = c(4, 7, NA, 3, 6, 2),
+  walking_distance = c(420, 310, 280, 510, NA, 460)
+)
+
+# Select a location in the data folder
+raw_path <- file.choose(new = TRUE)
+
+# Save the original dataset
+write_csv(
+  follow_up,
+  file = raw_path
+)
+
+# Import the file through:
+# Import Dataset -> From Text (readr)
+# Give the imported object the name follow_up_imported
+
+# Check the imported data
+dim(follow_up_imported)
+names(follow_up_imported)
+
+sum(is.na(follow_up_imported$pain_score))
+sum(is.na(follow_up_imported$walking_distance))
+
+# Add a completeness indicator
+follow_up_imported$complete_record <-
+  !is.na(follow_up_imported$pain_score) &
+  !is.na(follow_up_imported$walking_distance)
+
+follow_up_imported$complete_record
+
+# Select a location in the output folder
+checked_path <- file.choose(new = TRUE)
+
+# Save the checked dataset
+write_csv(
+  follow_up_imported,
+  file = checked_path
+)
+```
+
+The checks should give:
+
+```r
+dim(follow_up_imported)
+# 6 3
+
+sum(is.na(follow_up_imported$pain_score))
+# 1
+
+sum(is.na(follow_up_imported$walking_distance))
+# 1
+
+follow_up_imported$complete_record
+# TRUE TRUE FALSE TRUE FALSE TRUE
+```
+
+After adding `complete_record`, the checked dataset has six rows and four columns.
+
+</details>
+
+
+# End-of-day check
+
+Can you locate your saved script, rerun a calculation, use a help page, select measurements, handle missing values, inspect a dataset, and find the CSV you exported? You may use your notes. If a step is still difficult, note it and ask for help.
+
+Suggested home practice: choose B6 and one unfinished core task. B1-B5 are additional options, not required homework. Wednesday begins with questions before moving to data transformation and plots.
+
+## Technical reference links
+
+For code execution and shortcuts, see the [RStudio code-execution guide](https://docs.posit.co/ide/user/ide/guide/code/execution.html). For CSV import options and returned types, see the [readr documentation](https://readr.tidyverse.org/reference/read_delim.html). General background is available in [An Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html). These are reference links, not extra reading required for the morning.
+
+
+
+# Additional independent practice bank
+
+## B1. Physiotherapy appointment capacity
+
+A physiotherapist has 240 working minutes. An appointment uses 30 treatment minutes and 10 documentation minutes.
+
+1. Create objects for the available time and both parts of an appointment.
+2. Calculate how many complete appointments fit exactly into this session.
+3. Calculate total treatment time and its percentage of available time.
+4. Repeat if documentation takes 15 minutes. `floor(x)` returns the largest integer not exceeding `x`. Use it to count complete appointments and calculate unused minutes.
+
+<details>
+<summary>Hint</summary>
+
+Add treatment and documentation time before dividing the available time. Multiply the number of complete appointments by the time per appointment to find used minutes.
+
+</details>
+
+<details>
+<summary>Solution</summary>
+
+```{r}
+available <- 240
+treatment <- 30
+documentation <- 10
+per_appointment <- treatment + documentation
+n_appointments <- available / per_appointment  # 6
+treatment_total <- n_appointments * treatment  # 180
+treatment_total / available * 100             # 75%
+documentation <- 15
+per_appointment <- treatment + documentation
+n_appointments <- floor(available / per_appointment) # 5
+available - n_appointments * per_appointment         # 15
+```
+
+</details>
+
+## B2. Change in walking distance
+
+Six fictional rehabilitation patients have before and after measurements in metres.
+
+```{r}
+id <- c("R01", "R02", "R03", "R04", "R05", "R06")
+before_m <- c(250, 300, 180, 420, 310, 260)
+after_m <- c(280, 300, 220, 410, 340, 290)
+```
+
+1. Calculate a vector of changes as after minus before.
+2. Return IDs with a positive change and count them.
+3. Calculate the mean and median change.
+4. Identify any unchanged and decreased distances. Write one descriptive sentence and explain why this alone does not establish a treatment effect.
+
+<details>
+<summary>Hint</summary>
+
+R subtracts corresponding elements of two aligned numeric vectors. Compare the resulting change vector with zero.
+
+</details>
+
+<details>
+<summary>Solution</summary>
+
+```{r}
+change_m <- after_m - before_m     # 30, 0, 40, -10, 30, 30
+id[change_m > 0]                  # R01, R03, R05, R06
+sum(change_m > 0)                 # 4
+mean(change_m)                    # 20
+median(change_m)                  # 30
+id[change_m == 0]                 # R02
+id[change_m < 0]                  # R04
+```
+
+Mean distance increased by 20 metres in these six records. Without a suitable comparison or design, the change cannot be attributed to treatment alone.
+
+</details>
+
+## B3. Check units and data types
+
+A data-entry export contains heart rates as text:
+
+```{r}
+pulse_text <- c("72", "81", "76", "94", "68")
+```
+
+1. Inspect the type and attempt `mean(pulse_text)`. Read the warning.
+2. `as.numeric()` converts valid numeric text into numbers. Create `pulse_numeric` and check its type and mean.
+3. Repeat using `c("72", "missing", "76")`. Identify the new missing value and explain why blindly converting without checking would be risky.
+
+<details>
+<summary>Hint</summary>
+
+Keep the original text vector. Inspect the new numeric vector with `class()` and `is.na()`.
+
+</details>
+
+<details>
+<summary>Solution</summary>
+
+```{r}
+class(pulse_text)
+mean(pulse_text)                 # warning and NA
+pulse_numeric <- as.numeric(pulse_text)
+class(pulse_numeric)
+mean(pulse_numeric)              # 78.2
+mixed_text <- c("72", "missing", "76")
+converted <- as.numeric(mixed_text) # warning: NA introduced
+is.na(converted)                # FALSE TRUE FALSE
+```
+
+The word `"missing"` cannot be interpreted as a number. Inspect conversion warnings instead of silently removing affected records.
+
+</details>
+
+## B4. Two measurements per patient: matrix practice
+
+Run the starter below. Each row is one patient. The first column is systolic blood pressure in mmHg, and the second is heart rate in beats per minute.
+
+```{r}
+vital_signs <- matrix(c(120, 75, 128, 82, 140, 88),
+                     nrow = 3, byrow = TRUE)
+colnames(vital_signs) <- c("systolic_bp", "heart_rate")
+```
+
+1. Display the second patient's two measurements.
+2. Display every heart-rate measurement.
+3. Calculate mean heart rate from the selected column.
+4. Replace the third patient's heart rate with 90 and check the updated matrix.
+5. After Section 4, try this extra step: convert it with `as.data.frame(vital_signs)` and inspect the result.
+
+<details>
+<summary>Hint</summary>
+
+`x[row, column]` selects a position. Leave a dimension blank to keep all its entries. Assign a replacement with `<-`.
+
+</details>
+
+<details>
+<summary>Solution</summary>
+
+```{r}
+vital_signs <- matrix(c(120, 75, 128, 82, 140, 88),
+                     nrow = 3, byrow = TRUE)
+colnames(vital_signs) <- c("systolic_bp", "heart_rate")
+vital_signs[2, ]
+vital_signs[, "heart_rate"]
+mean(vital_signs[, "heart_rate"])  # about 81.67
+vital_signs[3, "heart_rate"] <- 90
+vital_signs
+vitals_df <- as.data.frame(vital_signs)
+str(vitals_df)
+```
+
+</details>
+
+## B5. Birth-weight checkpoint
+
+Load `MASS::birthwt` into `birth_data`. If MASS is unavailable, install it once with `install.packages("MASS")`.
+
+```{r}
+birth_data <- MASS::birthwt
+```
+
+Each row is one birth record. `age` is maternal age in years, `bwt` is birth weight in grams, `low` is a 0/1 indicator for birth weight below 2,500 g, and `smoke` is a 0/1 smoking indicator. You do not need the other columns for this exercise. See the [dataset documentation](https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/birthwt.html) for its origin and variable definitions.
+
+1. Inspect dimensions, names, first rows, types, and missing birth weights.
+2. Calculate mean, median, minimum, and maximum birth weight.
+3. Calculate the number and percentage coded as `low == 1`, making the denominator clear.
+4. Calculate mean maternal age and the number coded as `smoke == 1`.
+5. Create a one-row summary with sample size, mean birth weight, and low-birth-weight percentage. Save it to `output/birth_weight_summary.csv`.
+6. Write two descriptive sentences. Do not interpret the sample as a population prevalence estimate or a causal smoking effect.
+
+<details>
+<summary>Hint</summary>
+
+Create the summary directly with `data.frame()`, as in the E6 extension. Give each summary column a meaningful name and supply one calculated value for it.
+
+</details>
+
+<details>
+<summary>Solution</summary>
+
+```{r}
+birth_data <- MASS::birthwt
+dim(birth_data)
+names(birth_data)
+head(birth_data)
+str(birth_data)
+sum(is.na(birth_data$bwt))
+mean(birth_data$bwt, na.rm = TRUE)
+median(birth_data$bwt, na.rm = TRUE)
+min(birth_data$bwt, na.rm = TRUE)
+max(birth_data$bwt, na.rm = TRUE)
+n_low <- sum(birth_data$low == 1, na.rm = TRUE)
+pct_low <- n_low / sum(!is.na(birth_data$low)) * 100
+n_low
+pct_low
+mean(birth_data$age, na.rm = TRUE)
+sum(birth_data$smoke == 1, na.rm = TRUE)
+birth_weight_summary <- data.frame(
+  n = length(birth_data$bwt),
+  mean_birth_weight_g = mean(birth_data$bwt, na.rm = TRUE),
+  low_birth_weight_pct = pct_low
+)
+readr::write_csv(birth_weight_summary,
+                 "output/birth_weight_summary.csv")
+```
+
+</details>
+
+## B6. Debugging lab
+
+Copy one case at a time into a new script. Run it, read the output, explain the problem, and correct it. Do not run all broken cases at once. Some produce an error, some a warning, and some simply produce an inappropriate result.
+
+An error prevents an operation from completing. A warning signals a concern that needs checking. An informational message is not necessarily a problem. A result can also be wrong without any error message.
+
+**Case A: object spelling**
+
+```r
+weight_kg <- 72
+height_m <- 1.68
+bmi <- weight_kg / height_m^2
+Bmi
+```
+
+**Case B: missing observations**
+
+```r
+pain <- c(4, NA, 6)
+mean(pain)
+```
+
+**Case C: selecting records**
+
+```r
+age <- c(34, 51, 46)
+smoke <- c(0, 1, 0)
+age[smoke = 1]
+```
+
+**Case D: units and parentheses**
+
+```r
+weight_kg <- 68
+height_cm <- 172
+weight_kg / height_cm^2
+```
+
+**Case E: a column that does not exist**
+
+```r
+mini <- data.frame(age = c(34, 51, 46))
+mean(mini$Age)
+```
+
+**Case F: saving the wrong object**
+
+```r
+result <- data.frame(mean_age = 43.7)
+result_path <- file.choose(new = TRUE)
+readr::write_csv(results, result_path)
+```
+
+**What to keep:** `intro/code/debugging_lab.R` with corrected commands and a comment explaining each correction. Note one unresolved question for Wednesday.
+
+<details>
+<summary>Hints</summary>
+
+Check exact names, missing-value arguments, `==` versus `=`, units, available column names, and the intended folder. For an incomplete command showing `+` in the Console, press Escape and check brackets or quotation marks.
+
+</details>
+
+<details>
+<summary>Solutions and explanations</summary>
+
+```{r}
+# A: the defined object is lower-case bmi
+bmi
+# B: mean among the two observed scores
+mean(pain, na.rm = TRUE)       # 5
+# C: comparison uses two equal signs
+age[smoke == 1]               # 51
+# D: convert centimetres to metres before squaring
+weight_kg / (height_cm / 100)^2
+# E: inspect names and use the existing lower-case column
+names(mini)
+mean(mini$age)
+# F: use the right object
+readr::write_csv(result, result_path)
+```
+
+A produces an object-name error. B returns `NA` without an error. C is a silent selection mistake: for this ordinary vector, `age[smoke = 1]` selects the first element, 34. It does not test the smoking indicator. The intended comparison is `smoke == 1`, which selects age 51. D runs but uses the wrong units. E accesses a nonexistent column, producing `NULL`, followed by a warning and `NA` from `mean()`.F produces an object-not-found error because the object is called `result`, not `results`. Exact messages can vary by version. The unusual behaviour in C follows R's [index-argument matching rules](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Extract.html).
+
+</details>
+
