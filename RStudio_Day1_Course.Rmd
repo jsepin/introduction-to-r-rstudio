@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 
 The R Markdown source files are available in the [course GitHub repository](https://github.com/jsepin/introduction-to-r-rstudio).
 
+
 # How to use this course
 
 This optional introduction is for Master's students in health sciences who are new to R or would like supported practice before Basic Research Methods. This file covers **Monday only: three 45-minute blocks, 135 teaching minutes in total**. Data transformation with `dplyr` and plotting with `ggplot2` belong to Wednesday.
