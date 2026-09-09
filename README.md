@@ -1,11 +1,5 @@
 # Introduction to R and RStudio
 
--   [Day 1](https://jsepin.github.io/introduction-to-r-rstudio/RStudio_Day1_Course.html)
--   [Day 2](https://jsepin.github.io/introduction-to-r-rstudio/RStudio_Day2_Course.html)
-
-
-# Introduction to R and RStudio
-
 An optional introductory course for Master's students in Health Sciences who would like supported practice with R before Basic Research Methods.
 No previous programming experience is required.
 

@@ -14,6 +14,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
+The R Markdown source files are available in the [course GitHub repository](https://github.com/jsepin/introduction-to-r-rstudio).
+
 # How to use this course
 
 This is the optional Wednesday session: three 45-minute teaching blocks. Use the rendered HTML handout beside RStudio. Write and run your work in an ordinary R script called `day2.R`. You do not need to knit an R Markdown document yourself.
@@ -21,8 +23,6 @@ This is the optional Wednesday session: three 45-minute teaching blocks. Use the
 The six exercises are labelled **E1** to **E6** so they cannot be confused with Monday's exercises. Start with the core tasks. Use the hints, ask for help, and open solutions after attempting the task. Extensions and the practice bank are optional. You are not expected to finish every task.
 
 Our aim is to select patients, create a variable, describe groups, and make an understandable figure. All rehabilitation data below are fictional. A change in these data is a description, not evidence that a programme caused an improvement.
-
-[Course github](https://github.com/jsepin/introduction-to-r-rstudio)
 
 ## Before class
 
