@@ -24,7 +24,7 @@ The R Markdown source files are available in the [course GitHub repository](http
 
 This optional introduction is for Master's students in health sciences who are new to R or would like supported practice before Basic Research Methods. This file covers **Monday only: three 45-minute blocks, 135 teaching minutes in total**. Data transformation with `dplyr` and plotting with `ggplot2` belong to Wednesday.
 
-Today you will learn to write and save a script, use objects and functions, work with vectors and missing values, inspect a data frame, and import and export a CSV file. Matrices receive a short introduction. You do not need an RStudio Project or an R Markdown workflow to participate.
+Today you will learn to write and save a script, use objects and functions, work with vectors and missing values, inspect a data frame, and import and export a CSV file. You do not need an RStudio Project or an R Markdown workflow to participate.
 
 There are **six independent-work periods**. In each exercise:
 
@@ -35,8 +35,6 @@ There are **six independent-work periods**. In each exercise:
 5. Open the solution after your attempt and compare it with your own code.
 
 You are not expected to finish every extension or additional exercise. Extra tasks are a practice bank, not additional compulsory material. All small clinical datasets below are fictional. Thresholds are exercise definitions, not clinical recommendations.
-
-[Course github](https://github.com/jsepin/introduction-to-r-rstudio)
 
 ## Before class
 
@@ -60,7 +58,6 @@ Bring your laptop, charger, and any installation error. The first two blocks nee
 | 2 | E3: Identify records for follow-up |
 | 2 | Missing measurements |
 | 2 | E4: Oxygen-saturation records |
-| 2 | A brief introduction to matrices |
 | 3 | Data frames and inspection |
 | 3 | E5: Describe the clinic sample |
 | 3 | Packages and CSV files |
@@ -128,10 +125,8 @@ R distinguishes `bmi` from `Bmi`. Use meaningful names, avoid spaces, and do not
 
 **Core tasks**
 
-1. At the second visit, the participant weighs 81 kg and is measured as 1.69 m tall. Calculate the BMI using different object names so that you retain both results.
+1. First, recreate the first-visit BMI using 72 kg and 1.68 m. At the second visit, the participant weighs 81 kg and is measured as 1.69 m tall. Calculate the BMI using different object names so that you retain both results.
 2. What is the change in the BMI?
-3. A height is reported as 168 cm. Create `height_cm` and convert it to metres in R before calculating a BMI. Explain why the units matter.
-4. Add a comment explaining the difference between saving a script and storing an object in the Environment.
 
 **What to show:** a saved script, the updated BMI, and a short explanation of why recalculation is needed.
 
@@ -170,11 +165,6 @@ bmi_second                  # 28.36035
 
 # difference
 bmi_second - bmi            # 2.850147
-
-# Unit conversion
-height_cm <- 168
-height_converted <- height_cm / 100
-72 / height_converted^2
 ```
 
 </details>
@@ -310,10 +300,6 @@ age[2:4]
 age[c(1, 5)]
 age[age >= 50]
 diagnosis[smoker]
-
-older <- age >= 50
-sum(older)                  # TRUE counts as 1, FALSE as 0
-sum(older) / length(age) * 100
 ```
 
 Inside square brackets, positions or a logical vector identify the elements to keep. Preserve alignment between the vectors when selecting patient IDs from a condition on measurements.
@@ -427,13 +413,12 @@ oxygen_saturation <- c(97, 94, NA, 91, 98, NA, 95)
 1. Count all records, missing values, and observed values.
 2. Calculate the percentage of all seven records that are missing.
 3. Run `mean(oxygen_saturation)`. Explain the result, then calculate the mean using only observed values.
-4. Write a sentence reporting the observed mean and how many measurements contributed. Explain why replacing `NA` with zero would answer a different question.
 
 **Finished? Extend the analysis**
 
-5. Return only observed values below 95, with no `NA` in the result.
-6. Calculate the percentage of **observed** measurements below 95. State the denominator explicitly and compare it with the total number of records.
-7. Copy the vector `oxygen_saturation`, name it as `oxygen_saturation_imp` and fill (impute) the missing values with the mean of the observed values.
+4. Return only observed values below 95, with no `NA` in the result.
+5. Calculate the percentage of **observed** measurements below 95. State the denominator explicitly and compare it with the total number of records.
+6. Copy the vector `oxygen_saturation`, name it as `oxygen_saturation_imp` and fill (impute) the missing values with the mean of the observed values.
 
 **What to show:** the missing count, observed mean, and a sentence identifying the observed sample size.
 
@@ -476,26 +461,7 @@ oxygen_saturation_imp <- oxygen_saturation
 oxygen_saturation_imp[is.na(oxygen_saturation_imp)] <- mean(oxygen_saturation, na.rm = TRUE)
 ```
 
-Example report: "The mean oxygen saturation was 95% among five recorded measurements. Two of seven records were missing." In the rehabilitation example, zero is a recorded pain score and should not be removed as if it were missing.
-
 </details>
-
-## 3.5 Matrices: brief orientation
-
-A matrix is rectangular, and its elements have the same basic type. Here each row is one patient and the columns contain two numeric measurements.
-
-```{r}
-vital_signs <- matrix(
-  c(120, 75, 128, 82, 140, 88),
-  nrow = 3, byrow = TRUE
-)
-colnames(vital_signs) <- c("systolic_bp", "heart_rate")
-vital_signs
-vital_signs[2, 1]            # row 2, column 1
-vital_signs[, 2]            # all rows, column 2
-```
-
-The two-minute demonstration is orientation, not matrix mastery. Additional practice B4 below provides creation and selection tasks outside the timed core.
 
 # 4. Working with data frames
 
@@ -546,18 +512,17 @@ patients <- data.frame(
 
 **Core tasks**
 
-1. Inspect the first rows, dimensions, and structure. State what one row represents and identify one numeric, one character, and one logical column.
-2. Calculate mean age and the number recorded as smokers.
+1. Inspect the first three rows, dimensions, and structure of the data frame.
+2. Calculate the number recorded as smokers.
 3. Count missing systolic blood-pressure measurements, then calculate the mean among recorded measurements.
-4. Return the patient IDs for people aged at least 50. Write two sentences describing the sample, using units and observed sample sizes where appropriate.
+4. Return the patient IDs for people aged at least 50. 
 
 **Finished? Extend the analysis**
 
 5. Create `patients_checked` as a copy. Add `bp_missing` using `is.na()`. Check that the new column is logical and that the original data frame still has five columns.
-6. Return IDs belonging to the `"Intervention"` group and calculate their mean age. These are descriptive results, not evidence of an intervention effect.
-7. Create a small data frame of your own for three fictional rehabilitation patients with patient ID, walking distance in metres, and treatment group. Inspect its dimensions and calculate mean distance.
+6. Return IDs belonging to the `"Intervention"` group and calculate their mean age.
 
-**What to show:** an inspection, requested summaries, selected IDs, and two written sentences.
+**What to show:** an inspection, requested summaries, and selected IDs.
 
 <details>
 <summary>Hint 1: Treat a column like a vector</summary>
@@ -577,14 +542,13 @@ Use a logical age condition inside `patients$patient_id[...]`.
 <summary>Check after attempting: one solution</summary>
 
 ```{r}
-head(patients)
+head(patients, n = 3)
 dim(patients)                        # 6 rows, 5 columns
 str(patients)
-mean(patients$age)                   # about 46.67 years
 sum(patients$smoker)                 # 3
-sum(is.na(patients$systolic_bp))      # 1
+sum(is.na(patients$systolic_bp))     # 1
 mean(patients$systolic_bp, na.rm = TRUE) # 141.6 mmHg
-patients$patient_id[patients$age >= 50] # P02, P05, P06
+patients$patient_id[patients$age >= 50]  # P02, P05, P06
 
 # Extensions
 patients_checked <- patients
@@ -594,16 +558,7 @@ dim(patients)                        # still 6 by 5
 intervention <- patients$treatment == "Intervention"
 patients$patient_id[intervention]    # P02, P04, P06
 mean(patients$age[intervention])     # about 45.67
-rehab <- data.frame(
-  patient_id = c("R01", "R02", "R03"),
-  distance_m = c(250, 320, 280),
-  treatment = c("A", "B", "A")
-)
-dim(rehab)
-mean(rehab$distance_m)
 ```
-
-Example report: "The sample contains six patients, with mean age 46.7 years and three recorded smokers. Mean systolic blood pressure was 141.6 mmHg among five recorded measurements, with one missing value."
 
 </details>
 
@@ -750,7 +705,6 @@ This means that the imported dataset has six rows and five columns.
 You can also click `patients_imported` in the Environment pane to inspect it.
 
 `read_csv()` may display a message explaining how it interpreted the columns. This is information and not necessarily an error. For now, check whether the object was created and whether it contains the expected rows and columns.
-
 
 ## E6: Save, import, check, and save again
 
@@ -1031,12 +985,6 @@ After adding `complete_record`, the checked dataset has six rows and four column
 Can you locate your saved script, rerun a calculation, use a help page, select measurements, handle missing values, inspect a dataset, and find the CSV you exported? You may use your notes. If a step is still difficult, note it and ask for help.
 
 Suggested home practice: choose B6 and one unfinished core task. B1-B5 are additional options, not required homework. Wednesday begins with questions before moving to data transformation and plots.
-
-## Technical reference links
-
-For code execution and shortcuts, see the [RStudio code-execution guide](https://docs.posit.co/ide/user/ide/guide/code/execution.html). For CSV import options and returned types, see the [readr documentation](https://readr.tidyverse.org/reference/read_delim.html). General background is available in [An Introduction to R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html). These are reference links, not extra reading required for the morning.
-
-
 
 # Additional independent practice bank
 

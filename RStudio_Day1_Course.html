@@ -2769,9 +2769,8 @@ blocks, 135 teaching minutes in total</strong>. Data transformation with
 Wednesday.</p>
 <p>Today you will learn to write and save a script, use objects and
 functions, work with vectors and missing values, inspect a data frame,
-and import and export a CSV file. Matrices receive a short introduction.
-You do not need an RStudio Project or an R Markdown workflow to
-participate.</p>
+and import and export a CSV file. You do not need an RStudio Project or
+an R Markdown workflow to participate.</p>
 <p>There are <strong>six independent-work periods</strong>. In each
 exercise:</p>
 <ol style="list-style-type: decimal">
@@ -2789,8 +2788,6 @@ code.</li>
 exercise. Extra tasks are a practice bank, not additional compulsory
 material. All small clinical datasets below are fictional. Thresholds
 are exercise definitions, not clinical recommendations.</p>
-<p><a href="https://github.com/jsepin/introduction-to-r-rstudio">Course
-github</a></p>
 <div id="before-class" class="section level2">
 <h2>Before class</h2>
 <p>Install <a href="https://cran.r-project.org/">R</a> first, then <a href="https://posit.co/download/rstudio-desktop/">RStudio Desktop</a>.
@@ -2843,22 +2840,18 @@ blocks need only base R.</p>
 <td align="left">E4: Oxygen-saturation records</td>
 </tr>
 <tr class="odd">
-<td align="left">2</td>
-<td align="left">A brief introduction to matrices</td>
-</tr>
-<tr class="even">
 <td align="left">3</td>
 <td align="left">Data frames and inspection</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">3</td>
 <td align="left">E5: Describe the clinic sample</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">3</td>
 <td align="left">Packages and CSV files</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">3</td>
 <td align="left">E6: Save, import, check, and save again</td>
 </tr>
@@ -2964,15 +2957,11 @@ update after the next visit. BMI is weight in kilograms divided by
 height in metres squared.</p>
 <p><strong>Core tasks</strong></p>
 <ol style="list-style-type: decimal">
-<li>At the second visit, the participant weighs 81 kg and is measured as
-1.69 m tall. Calculate the BMI using different object names so that you
-retain both results.</li>
+<li>First, recreate the first-visit BMI using 72 kg and 1.68 m. At the
+second visit, the participant weighs 81 kg and is measured as 1.69 m
+tall. Calculate the BMI using different object names so that you retain
+both results.</li>
 <li>What is the change in the BMI?</li>
-<li>A height is reported as 168 cm. Create <code>height_cm</code> and
-convert it to metres in R before calculating a BMI. Explain why the
-units matter.</li>
-<li>Add a comment explaining the difference between saving a script and
-storing an object in the Environment.</li>
 </ol>
 <p><strong>What to show:</strong> a saved script, the updated BMI, and a
 short explanation of why recalculation is needed.</p>
@@ -3008,12 +2997,7 @@ bmi_second &lt;- weight_second / height_second^2
 bmi_second                  # 28.36035
 
 # difference
-bmi_second - bmi            # 2.850147
-
-# Unit conversion
-height_cm &lt;- 168
-height_converted &lt;- height_cm / 100
-72 / height_converted^2</code></pre>
+bmi_second - bmi            # 2.850147</code></pre>
 </details>
 </div>
 <div id="using-functions-and-getting-help" class="section level2">
@@ -3149,11 +3133,7 @@ these vectors. Use <code>==</code> for a comparison, not
 age[2:4]
 age[c(1, 5)]
 age[age &gt;= 50]
-diagnosis[smoker]
-
-older &lt;- age &gt;= 50
-sum(older)                  # TRUE counts as 1, FALSE as 0
-sum(older) / length(age) * 100</code></pre>
+diagnosis[smoker]</code></pre>
 <p>Inside square brackets, positions or a logical vector identify the
 elements to keep. Preserve alignment between the vectors when selecting
 patient IDs from a condition on measurements.</p>
@@ -3268,12 +3248,9 @@ summarising recorded values, not making treatment decisions.</p>
 <li>Calculate the percentage of all seven records that are missing.</li>
 <li>Run <code>mean(oxygen_saturation)</code>. Explain the result, then
 calculate the mean using only observed values.</li>
-<li>Write a sentence reporting the observed mean and how many
-measurements contributed. Explain why replacing <code>NA</code> with
-zero would answer a different question.</li>
 </ol>
 <p><strong>Finished? Extend the analysis</strong></p>
-<ol start="5" style="list-style-type: decimal">
+<ol start="4" style="list-style-type: decimal">
 <li>Return only observed values below 95, with no <code>NA</code> in the
 result.</li>
 <li>Calculate the percentage of <strong>observed</strong> measurements
@@ -3324,28 +3301,7 @@ sum(oxygen_saturation &lt; 95, na.rm = TRUE) /
 
 oxygen_saturation_imp &lt;- oxygen_saturation
 oxygen_saturation_imp[is.na(oxygen_saturation_imp)] &lt;- mean(oxygen_saturation, na.rm = TRUE)</code></pre>
-<p>Example report: “The mean oxygen saturation was 95% among five
-recorded measurements. Two of seven records were missing.” In the
-rehabilitation example, zero is a recorded pain score and should not be
-removed as if it were missing.</p>
 </details>
-</div>
-<div id="matrices-brief-orientation" class="section level2">
-<h2>3.5 Matrices: brief orientation</h2>
-<p>A matrix is rectangular, and its elements have the same basic type.
-Here each row is one patient and the columns contain two numeric
-measurements.</p>
-<pre class="r"><code>vital_signs &lt;- matrix(
-  c(120, 75, 128, 82, 140, 88),
-  nrow = 3, byrow = TRUE
-)
-colnames(vital_signs) &lt;- c(&quot;systolic_bp&quot;, &quot;heart_rate&quot;)
-vital_signs
-vital_signs[2, 1]            # row 2, column 1
-vital_signs[, 2]            # all rows, column 2</code></pre>
-<p>The two-minute demonstration is orientation, not matrix mastery.
-Additional practice B4 below provides creation and selection tasks
-outside the timed core.</p>
 </div>
 </div>
 <div id="working-with-data-frames" class="section level1">
@@ -3392,15 +3348,12 @@ starter below, even if you ran the demonstration.</p>
 )</code></pre>
 <p><strong>Core tasks</strong></p>
 <ol style="list-style-type: decimal">
-<li>Inspect the first rows, dimensions, and structure. State what one
-row represents and identify one numeric, one character, and one logical
-column.</li>
-<li>Calculate mean age and the number recorded as smokers.</li>
+<li>Inspect the first three rows, dimensions, and structure of the data
+frame.</li>
+<li>Calculate the number recorded as smokers.</li>
 <li>Count missing systolic blood-pressure measurements, then calculate
 the mean among recorded measurements.</li>
-<li>Return the patient IDs for people aged at least 50. Write two
-sentences describing the sample, using units and observed sample sizes
-where appropriate.</li>
+<li>Return the patient IDs for people aged at least 50.</li>
 </ol>
 <p><strong>Finished? Extend the analysis</strong></p>
 <ol start="5" style="list-style-type: decimal">
@@ -3409,15 +3362,10 @@ where appropriate.</li>
 column is logical and that the original data frame still has five
 columns.</li>
 <li>Return IDs belonging to the <code>&quot;Intervention&quot;</code> group and
-calculate their mean age. These are descriptive results, not evidence of
-an intervention effect.</li>
-<li>Create a small data frame of your own for three fictional
-rehabilitation patients with patient ID, walking distance in metres, and
-treatment group. Inspect its dimensions and calculate mean
-distance.</li>
+calculate their mean age.</li>
 </ol>
 <p><strong>What to show:</strong> an inspection, requested summaries,
-selected IDs, and two written sentences.</p>
+and selected IDs.</p>
 <details>
 <summary>
 Hint 1: Treat a column like a vector
@@ -3437,14 +3385,13 @@ Hint 2: Select IDs using another column
 <summary>
 Check after attempting: one solution
 </summary>
-<pre class="r"><code>head(patients)
+<pre class="r"><code>head(patients, n = 3)
 dim(patients)                        # 6 rows, 5 columns
 str(patients)
-mean(patients$age)                   # about 46.67 years
 sum(patients$smoker)                 # 3
-sum(is.na(patients$systolic_bp))      # 1
+sum(is.na(patients$systolic_bp))     # 1
 mean(patients$systolic_bp, na.rm = TRUE) # 141.6 mmHg
-patients$patient_id[patients$age &gt;= 50] # P02, P05, P06
+patients$patient_id[patients$age &gt;= 50]  # P02, P05, P06
 
 # Extensions
 patients_checked &lt;- patients
@@ -3453,17 +3400,7 @@ class(patients_checked$bp_missing)
 dim(patients)                        # still 6 by 5
 intervention &lt;- patients$treatment == &quot;Intervention&quot;
 patients$patient_id[intervention]    # P02, P04, P06
-mean(patients$age[intervention])     # about 45.67
-rehab &lt;- data.frame(
-  patient_id = c(&quot;R01&quot;, &quot;R02&quot;, &quot;R03&quot;),
-  distance_m = c(250, 320, 280),
-  treatment = c(&quot;A&quot;, &quot;B&quot;, &quot;A&quot;)
-)
-dim(rehab)
-mean(rehab$distance_m)</code></pre>
-<p>Example report: “The sample contains six patients, with mean age 46.7
-years and three recorded smokers. Mean systolic blood pressure was 141.6
-mmHg among five recorded measurements, with one missing value.”</p>
+mean(patients$age[intervention])     # about 45.67</code></pre>
 </details>
 </div>
 </div>
